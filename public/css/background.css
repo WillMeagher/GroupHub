@@ -1,0 +1,435 @@
+/* BACKGROUND */
+
+#content{
+    min-height: 754px;
+    min-width: 465px;
+    margin: 10px 20%;
+    background: rgb(77, 77, 77); /* For older browsers without RGBA */
+    background: rgba(77, 77, 77, 0.85);
+    border-radius: 20px;
+    border: 1px solid #7E7E7E;
+    color: white;
+}
+
+#background{
+    display: flex;
+    justify-content: center;
+    min-width: 485px;
+    position: absolute;
+    width: 100%; 
+    z-index: -1;
+}
+
+#background-image{
+    max-height: 780px;
+    width: 85%;
+    min-width: 405px;
+    max-width: 1500px;
+    align-self: center;
+}
+
+#blue-backdrop{
+    background-color: #006EB7;
+    width: 100%;
+    z-index: -1000;
+    margin-top: 5px;
+}
+
+#content > *{
+    align-self: center;
+}
+
+#shapes{
+    width: 100%;
+    height: 0;
+    justify-content: start;
+}
+
+.background-shape{
+    width: 80px;
+    height: 80px;
+    margin-top: 5px;
+}
+
+#background-circle-1{
+    background-color: #006EB7;
+    z-index: -998;
+    border-top-left-radius: 80px;
+    left: 0;
+}
+
+#background-square-1{
+    background-color: #1E1E1E;
+    z-index: -999;
+    left: 0;
+    margin-left: -80px;
+}
+
+#background-circle-2{
+    margin-left: auto;
+    background-color: #1E1E1E;
+    z-index: -1001;
+    border-bottom-right-radius: 80px;
+    right: 0;
+    margin-top: -75px;
+}
+
+#background-square-2{
+    background-color: #006EB7;
+    z-index: -1002;
+    right: 0;
+    margin-left: -80px;
+    margin-top: -75px;
+}
+
+/*Adaptive Page Size styling----------------------------*/
+@media screen and (min-width: 0px) and (max-width: 1450px){
+    #content{
+        margin: 10px;
+    }
+}
+
+/*Header Styling ---------------------------*/
+#header{
+    height: 80px;
+    min-width: 465px;
+    margin: 10px 10px 0px 10px;
+    background-color: #484848;
+    border-radius: 20px;
+    justify-content: space-between;
+    border: 1px solid #707070;
+}
+
+.username{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/*Left Header Styling*/
+#left-head{
+    margin: 8px 12px 8px;
+}
+
+#logo-pic{
+    height: 60px;  
+    margin-right: 10px;
+}
+
+#logo-text{
+    font-family: 'Segoe Script';
+    text-shadow: 1px 2px 5px #006EB7;
+    font-size: 40px;
+    color: white;
+    cursor: default;
+}
+
+/*Center Header Styling*/
+#nav-buttons{
+    width: 0;
+    left: 50%;
+    font-family: 'Ink Free', 'Segoe UI', Tahoma, Verdana, sans-serif;
+    align-self: center;
+    position: absolute;
+}
+
+/* Set margin so there is space between menue options */
+#nav-buttons > .container > a{
+    margin-right: 60px;
+    align-self: center;
+    font-size: 38px;
+}
+
+/* Remove space on right of last menu option and make there a negative margin so it looks better */
+#nav-buttons > .container > :last-child{
+    margin-right: -86px;
+}
+
+#num_notifications{
+    height: 24px;
+    min-width: 16px;
+    padding: 0 3px;
+    background-color: #006EB7;
+    border: 1.6px #FFFFFF solid;
+    border-radius: 100px;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    font-size: 16px;
+    color: white;
+    pointer-events: none;
+    z-index: 1001;
+    text-align: center;
+}
+
+/*Right Header Styling*/
+#menu-username{
+    max-width: 250px;
+    font-size: 26px;
+    margin-right: 20px;
+    align-self: center;
+    text-align: right;
+    vertical-align: center;
+}
+
+#menu-icon{
+    width: 0;
+    margin: 0 -160px 0 auto;
+    align-self: center;
+    font-size: 32px;
+    color: white;
+    z-index: 1000;
+}
+
+#login-register{
+    position: absolute;
+    right: 30px;
+    align-self: center;
+}
+
+#login-register-container{
+    min-width: 200px;
+    margin-left: auto;
+    align-self: center;
+    z-index: 1000;
+}
+
+#login-register-container > *{
+    margin: 5px;
+    color: white;
+}
+
+#menu-icon:hover{
+    cursor: pointer;
+}
+
+/* Dropdown styling*/
+#header-dropdown{
+    position: absolute;
+    width: 466px;
+    top: 102px;
+    right: 10px;
+    background-color: #484848;
+    border: 1px solid #7E7E7E;
+    border-radius: 20px;
+    font-size: 30px;
+}
+
+#header-dropdown > .container{
+    width: 406px;
+    padding: 20px 40px 20px 20px;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    color: white;
+    justify-content: start;
+}
+
+#header-dropdown > li{
+    list-style: none;
+    align-self: center;
+}
+
+#header-dropdown > .container:hover{
+    background-color: #7E7E7E;
+    cursor: pointer;
+}
+
+.dropdown-divider{
+    width: 430px;
+    margin: 0;
+    border: 1px solid #7E7E7E;
+    border-bottom: 1px;
+}
+
+#header-dropdown > .container > em{
+    width: 30px;
+    margin: 5px 10px 0px 5px;
+    color: white;
+    text-align: center;
+}
+
+/*Adaptive Page Size styling----------------------------*/
+/* this max-width needs to match the js value for set_notifications comparison */
+@media screen and (min-width: 1450px){    
+    .show-moble{
+        visibility: hidden;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 1450px){    
+    .hide-moble{
+        visibility: hidden;
+    }
+}
+
+@media screen and (min-width: 0px) and (max-width: 650px){
+    #login-register-container{
+        visibility: hidden;
+    }
+}
+
+/*Footer Styling ----------------------------*/
+/*top: 839px;*/
+#footer{
+    height: 100px;
+    width: 100%;
+    flex-direction: column;
+    font-size: 18px;
+    background-color: #484848;
+    border-top: 1px solid #707070;
+    min-width: 485px;
+}
+
+#footer-hr{
+    width: calc(40% + 200px);
+    border-bottom: 1px;
+    border-color: white;
+}
+
+.footer-link{
+    margin: 12px 20px 15px;
+    align-self: center;
+}
+
+/* Styles */
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+    
+::-webkit-scrollbar-track {
+    background: #707070;
+    border-radius: 10px;
+}
+    
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #585858;  
+}
+    
+::-webkit-scrollbar-thumb:hover {
+    background: #3A3A3A;  
+}
+
+/*General Styling*/
+.container{
+    display: flex;
+    justify-content: center;
+}
+
+body{
+    overflow-x: hidden;
+    margin: 0;
+    background-color: #1E1E1E;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    font-size: 24px;
+}
+
+a{
+    color: white;
+    list-style-type: none;
+    text-decoration: none;
+}
+
+a:hover{
+    text-decoration: underline;
+}
+
+*:focus {
+    outline: none;
+}
+
+.column{
+    flex-direction: column;
+}
+
+button:hover{
+    cursor: pointer;
+}
+
+#page-title{
+    max-width: 90%;
+    overflow-x: auto;
+    margin-bottom: -10px;
+    font-size: 88px;
+    font-family: 'Segoe Script';
+    text-shadow: 0px 3px 4px #006EB7;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.sub-title{
+    margin-top: 20px;
+    font-size: 70px;
+    font-family: 'Segoe Script';
+    text-shadow: 0px 3px 4px #006EB7;
+}
+
+input{
+    width: 350px;
+    padding: 10px;
+    background-color:#484848;
+    border: 1px solid #7E7E7E;
+    border-radius: 12px;
+    box-shadow: 1px 2px 5px #7EBAFF;
+    font-size: 24px;
+    color: white;
+}
+
+ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.field-header{
+    margin-bottom: 8px;
+    margin-left: 6px;
+    font-size: 36px;
+    color: white;
+}
+
+button{
+    padding: 8px 18px 10px 18px;
+    background-color: #006EB7;
+    border: 1px solid #707070;
+    border-radius: 12px;
+    font-size: 24px;
+    color: white;
+    align-self: center;
+}
+
+.info{
+    margin-bottom: 32px;
+}
+
+.info > *{
+    margin: 0 5px;
+}
+
+
+#fields{
+    max-width: 1000px;
+    flex-wrap: wrap;
+}
+
+.group-info{
+    width: 350px;
+    overflow-x: auto;
+    padding: 8px 10px 10px;
+    background-color:#484848;
+    box-shadow: 1px 2px 5px #7EBAFF;
+    border: 1px solid #7E7E7E;
+    border-radius: 12px;
+    color: white;
+}
+
+.field{
+    margin: 0 20px 16px;
+}
+
+@media screen and (min-width: 0px) and (max-width: 485px){
+    body{
+        overflow-x: scroll;
+    }
+}
