@@ -10,7 +10,7 @@
     <small>Created on {{$request->created_at}}</small>
     <hr>
 
-    {!! Form::open(['action' => ['App\Http\Controllers\GroupPermissionsController@update', $request->id], 'method' => 'POST']) !!}
+    {!! Form::open(['action' => ['App\Http\Controllers\PermissionsController@update', $request->id], 'method' => 'POST']) !!}
     {{Form::hidden('_method', 'PUT')}}
     {{Form::hidden('group_id', $request->group_id)}}
     {{Form::button('Accept', ['type' => 'submit', 'class' => 'btn btn-primary', 'name' => 'status', 'value' => 'Accepted'])}}

@@ -7,10 +7,15 @@
             <h2>&emsp;New Notifications</h2>
             <div class="card">
                 <ul class="list-group list-group-flush">
-                @foreach($newNotifications as $newNotification)
+                @foreach($newNotifications as $notification)
                     <li class="list-group-item">
-                        <h3><a href="/group/{{$newNotification->group_id}}"> You have been {{$newNotification->status}} <?php echo $newNotification->status == 'Accepted' ? 'to' : 'from'?> <b>{{$newNotification->group_name}}</b></a></h3>
-                        <small><b>Updated on:</b> {{$newNotification->updated_at}}</small>
+                        @if (Auth::user()->id == $notification->user_id)
+                            <h3><a href="/group/{{$notification->group_id}}/join"> You have been {{$notification->status}} <?php echo $notification->status == 'Accepted' ? 'to' : 'from'?> <b>{{$notification->group_name}}</b></a></h3>
+                        @else 
+                            <h3><a href="/permissions/{{$notification->id}}"> <b>{{$notification->user_name}}</b> wants to join <b>{{$notification->group_name}}</b></a></h3>
+                            <small><b>Message:</b> {{$notification->message}}</small>
+                        @endif
+                        <small><b>Updated on:</b> {{$notification->updated_at}}</small>
                     </li>
                 @endforeach
                 </ul>
@@ -21,10 +26,15 @@
             <h2>&emsp;Old Notifications</h2>
             <div class="card">
                 <ul class="list-group list-group-flush">
-                @foreach($oldNotifications as $oldNotification)
+                @foreach($oldNotifications as $notification)
                     <li class="list-group-item">
-                        <h3><a href="/group/{{$oldNotification->group_id}}"> You have been {{$oldNotification->status}}<?php echo $oldNotification->status == 'Accepted' ? 'to' : 'from'?> <b>{{$oldNotification->group_name}}</b></a></h3>
-                        <small><b>Updated on:</b> {{$oldNotification->updated_at}}</small>
+                        @if (Auth::user()->id == $notification->user_id)
+                            <h3><a href="/group/{{$notification->group_id}}"> You have been {{$notification->status}} <?php echo $notification->status == 'Accepted' ? 'to' : 'from'?> <b>{{$notification->group_name}}</b></a></h3>
+                        @else 
+                            <h3><a href="/permissions/{{$notification->id}}"> <b>{{$notification->user_name}}</b> wants to join <b>{{$notification->group_name}}</b></a></h3>
+                            <small><b>Message:</b> {{$notification->message}}</small>
+                        @endif
+                        <small><b>Updated on:</b> {{$notification->updated_at}}</small>
                     </li>
                 @endforeach
                 </ul>

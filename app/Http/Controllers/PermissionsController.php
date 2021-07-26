@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Group;
-use App\Models\GroupPermission;
-use Illuminate\Support\Facades\Auth;
+
+use App\Models\Permission;
 
 // for error logging
 use Illuminate\Support\Facades\Log;
 
-class GroupPermissionsController extends Controller
+class PermissionsController extends Controller
 {
 
     /**
@@ -31,23 +31,11 @@ class GroupPermissionsController extends Controller
      */
     public function index()
     {
-        // show user all requests to all their groups
-        $groupPermissions = GroupPermission::getAll(auth()->user()->id);
+        // show user all requests to all their groups and status of all their requests
+        $newNotifications = Permission::getNewNotifications(auth()->user()->id);
+        $oldNotifications = Permission::getOldNotifications(auth()->user()->id);
 
-        return view('permissions.index')->with('requests', $groupPermissions);
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function notifications()
-    {
-        $newNotifications = GroupPermission::getNewNotifications(auth()->user()->id);
-        $oldNotifications = GroupPermission::getOldNotifications(auth()->user()->id);
-
-        GroupPermission::notificationsViewed(auth()->user()->id);
+        Permission::notificationsViewed(auth()->user()->id);
 
         return view('permissions.notifications')->with('newNotifications', $newNotifications)->with('oldNotifications', $oldNotifications);
     }
@@ -63,10 +51,15 @@ class GroupPermissionsController extends Controller
 
         if (empty($group) || $group->privacy == 'Delisted') {
             return redirect('/group')->with('error', 'Group not found');
-        } else if (GroupPermission::isMember(auth()->user()->id, $group_id)) {
+        } else if (Permission::isMember(auth()->user()->id, $group_id)) {
             return redirect('/group/'.$group_id.'/join');
-        } else if (GroupPermission::exists(auth()->user()->id, $group_id)) {
+        } else if (Permission::exists(auth()->user()->id, $group_id)) {
             return redirect('/group/'.$group_id)->with('error', 'You already have an entry in our database for this group');
+        } else if ($group->privacy == 'Public') {
+            $request = new \Illuminate\Http\Request;
+            $request->setMethod('POST');
+            $request->request->add(['group_id' => $group->id]);
+            return $this->store($request);
         }
 
         return view('permissions.create')->with('group', $group);
@@ -89,26 +82,30 @@ class GroupPermissionsController extends Controller
 
         if (empty($group) || $group->privacy == 'Delisted') {
             return redirect('/group')->with('error', 'Group not found');
-        } else if (GroupPermission::exists(auth()->user()->id, $request->input('group_id'))) {
+        } else if (Permission::exists(auth()->user()->id, $request->input('group_id'))) {
             return redirect('/group/'.$request->input('group_id'))->with('error', 'You already have already requested to join this group');
         }
 
-        $groupPermissions = new GroupPermission;
+        $permissions = new Permission;
 
-        $groupPermissions->user_id = auth()->user()->id;
-        $groupPermissions->group_id = $request->input('group_id');
+        $permissions->user_id = auth()->user()->id;
+        $permissions->group_id = $request->input('group_id');
 
         if ($group->privacy == 'Public') {
-            $groupPermissions->message = '';
-            $groupPermissions->status = 'Accepted';
-            $groupPermissions->notify = 0;
-            $groupPermissions->save();
+            $permissions->message = '';
+            $permissions->status = 'Accepted';
+            $permissions->notify = 0;
+            $permissions->save();
+
+            Group::incrementSize($permissions->group_id);
+
             return redirect('/group/'.$request->input('group_id').'/join');
         } else {
-            $groupPermissions->message = $request->input('message');
-            $groupPermissions->status = 'Pending';
-            $groupPermissions->notify = 1;
-            $groupPermissions->save();
+            $permissions->message = $request->input('message');
+            $permissions->status = 'Pending';
+            $permissions->notify = 1;
+            $permissions->save();
+
             return redirect('/group/'.$request->input('group_id'))->with('success', 'Request Sent');
         }
     }
@@ -122,11 +119,11 @@ class GroupPermissionsController extends Controller
     public function show($id)
     {
         // show a single request to the owner of the group
-        $request = GroupPermission::find($id);
+        $request = Permission::find($id);
 
         if (empty($request)) {
             return redirect('/permissions')->with('error', 'Request not found');
-        } else if (auth()->user()->id !== GroupPermission::owner($id)) {
+        } else if (auth()->user()->id !== Permission::owner($id)) {
             return redirect('/permissions')->with('error', 'Unauthorized page');
         }
 
@@ -146,81 +143,54 @@ class GroupPermissionsController extends Controller
         // redirect to group premissions create on success
         $this->validate($request, self::updateValidationRules($request));
 
-        $groupPermissions = GroupPermission::find($id);
+        $permission = Permission::find($id);
 
-        if (empty($groupPermissions)) {
+        if (empty($permission)) {
             return redirect('/permissions')->with('error', 'Request not found');
-        } else if (auth()->user()->id !== $groupPermissions->group_creator_id) {
+        } else if (auth()->user()->id !== $permission->group_creator_id) {
             return redirect('/permissions')->with('error', 'Unauthorized page');
+        } else if ($permission->status != 'Pending') {
+            Log::error($permission);
+            return redirect('/permissions')->with('error', 'You have already '.$permission->status.' this request.');
         }
 
-        $groupPermissions->notify = 1;
-        $groupPermissions->status = $request->status;
+        $permission->notify = 1;
+        $permission->status = $request->status;
 
-        $groupPermissions->save();
+        $permission->save();
+
+        if ($permission->status == 'Accepted') {
+            Group::incrementSize($permission->group_id);
+        }
 
         return redirect('/permissions')->with('success', 'Request '.$request->status);
     }
 
-        /**
-     * Update the specified resource in storage.
+    /**
+     * Get a validation rules for an incoming create request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  array  $request
+     * @return array
      */
-    public function updateNotify(Request $request, $id)
+    protected function createValidationRules($request) 
     {
-        // allow group creator to accept or deny and update the pending field
-        // redirect to group premissions create on success
-        $this->validate($request, self::updateViewedValidationRules($request));
-
-        $groupPermissions = GroupPermission::find($id);
-
-        if (empty($groupPermissions)) {
-            return redirect('/permissions')->with('error', 'Request not found');
-        } else if ((auth()->user()->id !== $groupPermissions->group_creator_id || $groupPermissions->status != 'Pending') &&
-                    (auth()->user()->id !== $groupPermissions->user_id || $groupPermissions->status == 'Pending')) {
-            return redirect('/permissions')->with('error', 'Unauthorized page');
-        }
-
-        $groupPermissions->notify = 0;
-        $groupPermissions->timestamps = false;
-
-        $groupPermissions->save();
+        return [
+            'group_id' => ['required', 'integer'],
+            'message'  => ['max:1024']
+        ];
     }
 
     /**
-     * Delete all permissions to a group.
+     * Get a validation rules for an incoming update request.
      *
-     * @param  int  $group_id
+     * @param  array  $request
+     * @return array
      */
-    public static function delete($group_id)
-    {
-        GroupPermission::deleteGroup($group_id);
-    }
-
-    private function createValidationRules($request) 
-    {
-        return [
-            'message'  => [],
-            'group_id' => ['required', 'integer']
-        ];
-    }
-
-    private function updateValidationRules($request) 
+    protected function updateValidationRules($request) 
     {
         return [
             'group_id' => ['required', 'integer'],
-            'status' => ['in:Accepted,Denied']
+            'status' => ['required', 'in:Accepted,Denied']
         ];
-    }
-
-    private function updateViewedValidationRules($request) 
-    {
-        return [
-            'group_id' => ['required', 'integer'],
-        ];
-    }
-    
+    }    
 }

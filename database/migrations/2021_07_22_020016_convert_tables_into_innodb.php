@@ -28,12 +28,6 @@ class ConvertTablesIntoInnodb extends Migration
      */
     public function down()
     {
-        $tables = [
-            'users',
-            'groups'
-        ];
-        foreach ($tables as $table) {
-            DB::statement('ALTER TABLE ' . $table . ' ENGINE = MyISAM');
-        }
+        // issues with tring to denegrate this
     }
 }

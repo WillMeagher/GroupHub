@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('head')
-    <script src="{{ asset('js/groupCreate.js') }}" defer></script>
+    <script src="{{ asset('js/characterCount.js') }}" defer></script>
 @endsection
 
 @section('content')
@@ -38,7 +38,7 @@
             {{Form::label('description', 'Description')}}
             <div id='current-count' class='ml-auto text-secondary small'></div>
         </div>
-        {{Form::textArea('description', '', ['class' => 'form-control', 'placeholder' => 'Description'])}}
+        {{Form::textArea('description', '', ['class' => 'form-control input', 'placeholder' => 'Description'])}}
     </div>
 
     {{Form::submit('Create Group', ['class' => 'btn btn-primary'])}}

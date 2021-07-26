@@ -21,8 +21,13 @@ class CreateGroupsTable extends Migration
             $table->string('type');
             $table->enum('privacy', ['Public', 'Private', 'Delisted']);
             $table->text('description');
-            $table->bigInteger('creator_id');
+            $table->bigInteger('creator_id')->unsigned();
+            $table->bigInteger('size')->unsigned();
             $table->timestamps();
+        });
+
+        Schema::table('groups', function (Blueprint $table) {
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

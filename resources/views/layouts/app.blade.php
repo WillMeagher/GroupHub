@@ -46,13 +46,16 @@
                                 <a class="nav-link" href="/group/create">Create</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="/group/search">Search</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="/group">Discover</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/permissions">Requests</a>
+                                <a class="nav-link" href="/notifications">Notifications</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/notifications">Notifications</a>
+                                <a class="nav-link" href="/account">Account</a>
                             </li>
                         @endauth
                     </ul>

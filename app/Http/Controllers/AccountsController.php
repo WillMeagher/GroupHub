@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use app\Http\Middleware\EnsureAccountCreated;
 
 class AccountsController extends Controller
 {
@@ -38,7 +36,7 @@ class AccountsController extends Controller
      */
     public function create()
     {
-        return view('accounts.create')->with('options', self::dropDownOptions());
+        return view('accounts.create')->with('options', self::dropdownOptions());
     }
 
     /**
@@ -73,7 +71,7 @@ class AccountsController extends Controller
     public function edit()
     {
         $user = auth()->user();
-        return view('accounts.edit')->with('user', $user)->with('options', self::dropDownOptions());
+        return view('accounts.edit')->with('user', $user)->with('options', self::dropdownOptions());
     }
 
     /**
@@ -97,22 +95,6 @@ class AccountsController extends Controller
         $user->save();
 
         return redirect('/account')->with('success', 'Account updated');    }
-
-    /**
-     * Get a validator for an incoming request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validationRules($request)
-    {
-        return [
-            'gender' => ['required', 'in:'.implode(',', Self::$genderDropdowns)],
-            'school' => ['required', 'in:'.implode(',', Self::$schoolDropdowns)],
-            'major' =>  ['required', 'in:'.implode(',', Self::$majorDropdowns)],
-            'year' =>   ['required', 'in:'.implode(',', Self::$yearDropdowns)],
-        ];
-    }
 
     protected static $genderDropdowns = [
         'Male',
@@ -142,7 +124,23 @@ class AccountsController extends Controller
         'Other'
     ];
 
-    private static function dropDownOptions() 
+    /**
+     * Get a validation rules for an incoming request.
+     *
+     * @param  array  $request
+     * @return array
+     */
+    protected function validationRules($request)
+    {
+        return [
+            'gender' => ['required', 'in:'.implode(',', Self::$genderDropdowns)],
+            'school' => ['required', 'in:'.implode(',', Self::$schoolDropdowns)],
+            'major' =>  ['required', 'in:'.implode(',', Self::$majorDropdowns)],
+            'year' =>   ['required', 'in:'.implode(',', Self::$yearDropdowns)],
+        ];
+    }
+
+    private static function dropdownOptions() 
     {
         foreach(Self::$genderDropdowns as $gender) {
             $options['gender'][$gender] = $gender;

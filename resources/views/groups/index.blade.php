@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Groups</h1>
+    <h1>{{isset($title) ? $title : 'Groups'}}</h1>
         @if(count($groups) > 0)
             <div class="card">
                 <ul class="list-group list-group-flush">

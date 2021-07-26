@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGroupPermissionsTable extends Migration
+class CreatePermissionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateGroupPermissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('group_permissions', function (Blueprint $table) {
+        Schema::create('permissions', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
             $table->bigInteger('user_id')->unsigned();
@@ -24,7 +24,7 @@ class CreateGroupPermissionsTable extends Migration
             $table->timestamps();
         });
 
-        Schema::table('group_permissions', function (Blueprint $table) {
+        Schema::table('permissions', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
         });
@@ -37,6 +37,6 @@ class CreateGroupPermissionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('group_permissions');
+        Schema::dropIfExists('permissions');
     }
 }

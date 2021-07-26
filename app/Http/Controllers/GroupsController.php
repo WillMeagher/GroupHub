@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Group;
-use App\Models\GroupPermission;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Permission;
 use Illuminate\Validation\Rule;
-
-// for error logging
-use Illuminate\Support\Facades\Log;
+use \Validator;
 
 class GroupsController extends Controller
 {
@@ -26,13 +23,13 @@ class GroupsController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the listed groups.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $groups = Group::getAllListed();
+        $groups = Group::allListed();
 
         return view('groups.index')->with('groups', $groups);
     }
@@ -42,25 +39,34 @@ class GroupsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function createdGroups()
+    public function created()
     {
-        $groups = Group::userCreatedGroups(auth()->user()->id);
+        $groups = Group::created(auth()->user()->id);
 
-        return view('groups.index')->with('groups', $groups);
+        return view('groups.index')->with('groups', $groups)->with('title', 'Your Created Groups');
     }
 
     /**
-     * Display a listing of all the groups the user joined.
+     * Display a listing of all the groups a user has joined.
      *
      * @return \Illuminate\Http\Response
      */
-    public function joinedGroups()
+    public function joined()
     {
-        $groups = Group::userJoinedGroups(auth()->user()->id);
+        $groups = Group::joined(auth()->user()->id);
 
-        return view('groups.index')->with('groups', $groups);
+        return view('groups.index')->with('groups', $groups)->with('title', 'Your Joined Groups');
     }
-
+    
+    /**
+     * Display the search groups page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search()
+    {
+        return view('groups.search')->with('options', self::dropdownOptions());
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -69,7 +75,7 @@ class GroupsController extends Controller
      */
     public function create()
     {
-        return view('groups.create')->with('options', self::dropDownOptions());
+        return view('groups.create')->with('options', self::dropdownOptions());
     }
 
     /**
@@ -80,7 +86,7 @@ class GroupsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, self::createValidationRules(null, $request));
+        $this->validate($request, self::createValidation(null, $request));
 
         $group = new Group;
 
@@ -91,10 +97,30 @@ class GroupsController extends Controller
         $group->privacy     = $request->input('privacy');
         $group->description = $request->input('description') == null ? "" : $request->input('description');
         $group->creator_id  = auth()->user()->id;
+        $group->size  = 1;
 
         $group->save();
 
         return redirect('/group/created')->with('success', 'Group created');
+    }
+
+    /**
+     * Returns a search with results baised on the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function results(Request $request)
+    {
+        $validator = Validator::make($request->all(), self::searchValidation($request));
+
+        if ($validator->fails()) {
+            return redirect('/group/search')->withErrors($validator)->withInput();
+        }
+
+        $groups = [];
+
+        return view('groups.index')->with('groups', $groups)->with('title', 'Results');
     }
 
     /**
@@ -113,7 +139,7 @@ class GroupsController extends Controller
             return redirect('/group')->with('error', 'Unauthorized page');
         }
 
-        return view('groups.show')->with('group', $group)->with('size', GroupPermission::size($group->id));
+        return view('groups.show')->with('group', $group);
     }
 
     /**
@@ -128,7 +154,7 @@ class GroupsController extends Controller
 
         if (empty($group)) {
             return redirect('/group')->with('error', 'Group not found');
-        } else if (auth()->user()->id !== $group->creator_id && !GroupPermission::isMember(auth()->user()->id, $group->id)) {
+        } else if (auth()->user()->id !== $group->creator_id && !Permission::isMember(auth()->user()->id, $group->id)) {
             return redirect('/group')->with('error', 'Unauthorized page');
         }
 
@@ -151,7 +177,7 @@ class GroupsController extends Controller
             return redirect('/group/created')->with('error', 'Unauthorized page');
         }
         
-        return view('groups.edit')->with('group', $group)->with('options', self::dropDownOptions());
+        return view('groups.edit')->with('group', $group)->with('options', self::dropdownOptions());
     }
 
     /**
@@ -171,7 +197,7 @@ class GroupsController extends Controller
             return redirect('/group/created')->with('error', 'Unauthorized page');
         }
 
-        $this->validate($request, self::createValidationRules($group->id, $request));
+        $this->validate($request, self::createValidation($group->id, $request));
 
         $group->name        = $request->input('name');
         $group->link        = $request->input('link');
@@ -205,18 +231,6 @@ class GroupsController extends Controller
 
         return redirect('/group/created')->with('success', 'Group deleted');
     }
-
-    protected function createValidationRules($group_id, $request) 
-    {
-        return [
-            'name' =>           ['required', Rule::unique('groups')->ignore($group_id)],
-            'link' =>           ['required', Rule::unique('groups')->ignore($group_id)],
-            'platform' =>       ['required', 'in:'.implode(',', Self::$platformDropdowns)],
-            'type' =>           ['required', 'in:'.implode(',', Self::$typeDropdowns)],
-            'privacy' =>        ['required', 'in:'.implode(',', Self::$privacyDropdowns)],
-            'description' =>    ['max:1024']
-        ];
-    }
     
     protected static $platformDropdowns = [
         'Discord',
@@ -238,8 +252,58 @@ class GroupsController extends Controller
         'Private',
         'Delisted'
     ];
+    
+    protected static $sortbyDropdowns = [
+        'Most Popular',
+        'Newest',
+        'Trending'
+    ];
 
-    private static function dropDownOptions() 
+    /**
+     * Get a validation rules for an incoming request.
+     *
+     * @param  int  $group_id
+     * @param  array  $request
+     * @return array
+     */
+    protected function createValidation($group_id, $request) 
+    {
+        return [
+            'name' =>           ['required', Rule::unique('groups')->ignore($group_id)],
+            'link' =>           ['required', Rule::unique('groups')->ignore($group_id)],
+            'platform' =>       ['required', 'in:'.implode(',', Self::$platformDropdowns)],
+            'type' =>           ['required', 'in:'.implode(',', Self::$typeDropdowns)],
+            'privacy' =>        ['required', 'in:'.implode(',', Self::$privacyDropdowns)],
+            'description' =>    ['max:1024']
+        ];
+    }
+
+    /**
+     * Get a validation rules for an incoming request.
+     *
+     * @param  int  $group_id
+     * @param  array  $request
+     * @return array
+     */
+    protected function searchValidation($request) 
+    {
+        return [
+            'search' =>         ['required', 'max:128'],
+            'platform' =>       ['required', 'in:Any,'.implode(',', Self::$platformDropdowns)],
+            'type' =>           ['required', 'in:Any,'.implode(',', Self::$typeDropdowns)],
+            'privacy' =>        ['required', 'in:Any,'.implode(',', Self::$privacyDropdowns)],
+            'sortby' =>         ['required', 'in:'.implode(',', Self::$sortbyDropdowns)]
+        ];
+    }
+
+    /**
+     * Get dropdown options for
+     *
+     * @param  int  $group_id
+     * @param  array  $request
+     * @return array
+     */
+    protected static function dropdownOptions() 
     {
         foreach(Self::$platformDropdowns as $platform) {
             $options['platform'][$platform] = $platform;
@@ -249,6 +313,9 @@ class GroupsController extends Controller
         }
         foreach(Self::$privacyDropdowns as $privacy) {
             $options['privacy'][$privacy] = $privacy;
+        }
+        foreach(Self::$sortbyDropdowns as $sortby) {
+            $options['sortby'][$sortby] = $sortby;
         }
 
         return $options;

@@ -8,15 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Group extends Model
 {
     use HasFactory;
-
-    static function getAllListed() {
-        return self::select('groups.*', 'users.name AS creator_name')
-        ->from('groups')
-        ->join('users', 'users.id', '=', 'groups.creator_id')
-        ->where('groups.privacy', '!=', 'Delisted')
-        ->get();
-    }
-
+    
     static function find($id) {
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
@@ -25,7 +17,15 @@ class Group extends Model
         ->first();
     }
 
-    static function userCreatedGroups($user_id) {
+    static function allListed() {
+        return self::select('groups.*', 'users.name AS creator_name')
+        ->from('groups')
+        ->join('users', 'users.id', '=', 'groups.creator_id')
+        ->where('groups.privacy', '!=', 'Delisted')
+        ->get();
+    }
+
+    static function created($user_id) {
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
         ->join('users', 'users.id', '=', 'groups.creator_id')
@@ -33,13 +33,21 @@ class Group extends Model
         ->get();
     }
 
-    static function userJoinedGroups($user_id) {
+    static function joined($user_id) {
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
         ->join('users', 'users.id', '=', 'groups.creator_id')
-        ->join('group_permissions', 'group_permissions.group_id', '=', 'groups.id')
-        ->where('group_permissions.user_id', '=', $user_id)
-        ->where('group_permissions.status', '=', 'accepted')
+        ->join('permissions', 'permissions.group_id', '=', 'groups.id')
+        ->where('permissions.user_id', '=', $user_id)
+        ->where('permissions.status', '=', 'accepted')
         ->get();
     }
+
+    static function incrementSize($id) {
+        return self::select('groups.*')
+        ->from('groups')
+        ->where('groups.id', '=', $id)
+        ->increment('groups.size', 1);
+    }
+
 }
