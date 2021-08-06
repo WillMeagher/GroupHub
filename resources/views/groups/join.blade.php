@@ -9,9 +9,7 @@
     <h4>creator: {{$group->creator_name}}</h4>
     <h4>description: {{$group->description}}</h4>
     <h4>size: {{$group->size}}</h4>
-
     <h2>Link: {{$group->link}}</h2>
-
     <hr>
     <small>Created on {{$group->created_at}}</small>
     <hr>

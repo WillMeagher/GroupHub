@@ -7,6 +7,10 @@ use App\Models\Group;
 use App\Models\Permission;
 use Illuminate\Validation\Rule;
 use \Validator;
+use PhpSpellcheck\SpellChecker\Aspell;
+use App\Helpers\Inflect;
+
+//use Illuminate\Support\Facades\Log;
 
 class GroupsController extends Controller
 {
@@ -118,9 +122,51 @@ class GroupsController extends Controller
             return redirect('/group/search')->withErrors($validator)->withInput();
         }
 
-        $groups = [];
+        $groups = Group::allListed();
 
-        return view('groups.index')->with('groups', $groups)->with('title', 'Results');
+        $aspell = Aspell::create('C:\Program Files (x86)\Aspell\bin\aspell.exe');
+
+        // get each word from search query, set them to lowercase, split on " ", "-", "/", and remove and empty results
+        foreach (array_filter(preg_split('/( |-|\/)/', strtolower($request->search)), 'strlen') as $word) {
+            $misspelling = $aspell->check($word, ['en_US'], ['from_example'])->current();
+            if ($misspelling != Null) {
+                // get first 9 suggestions plus initial element at max
+                $searchWords[] = array_slice(array_merge(array($word), $misspelling->getSuggestions()), 0, 10);
+            } else {
+                $searchWords[] = array($word);
+            }
+        }
+
+        foreach ($groups as $group) {
+            $group['score'] = 0;
+
+            foreach ($searchWords as $words) {
+                foreach ($words as $word) {
+                    if (in_array(Inflect::singularize($word), preg_split('/( |-|\/)/', strtolower($group->name))) || 
+                        in_array(Inflect::pluralize($word), preg_split('/( |-|\/)/', strtolower($group->name)))) {
+                        $group['score'] += (20 / count($searchWords));
+                        continue;
+                    }
+                }
+            }
+
+            if ($request->platform == 'Any' || $group->platform == $request->platform) {
+                $group['score'] += 5;
+            }
+
+            if ($request->type == 'Any' || $group->type == $request->type) {
+                $group['score'] += 5;
+            }
+
+            if ($request->privacy == 'Any' || $group->privacy == $request->privacy) {
+                $group['score'] += 3;
+            }
+
+            error_log($group['score']);
+            
+        }
+
+        return view('groups.results')->with('groups', $groups)->with('options', self::dropdownOptions())->with('request', $request);
     }
 
     /**

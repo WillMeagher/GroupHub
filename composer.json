@@ -12,7 +12,8 @@
         "laravel/framework": "^8.40",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
-        "laravelcollective/html": "^6.2"
+        "laravelcollective/html": "^6.2",
+        "tigitz/php-spellchecker": "^0.3.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

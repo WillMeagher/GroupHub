@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-
     <h1>Search</h1>
+    
     {!! Form::open(['action' => 'App\Http\Controllers\GroupsController@results', 'method' => 'POST']) !!}
 
     <div class="form-group">
@@ -32,5 +32,4 @@
 
     {{Form::submit('Search', ['class' => 'btn btn-primary'])}}
     {!! Form::close() !!}
-
 @endsection

@@ -6,6 +6,7 @@
 
 @section('content')
     <h1>Edit Group</h1>
+    
     {!! Form::open(['action' => ['App\Http\Controllers\GroupsController@update', $group->id], 'method' => 'POST']) !!}
     <div class="form-group">
         {{Form::label('name', 'Group Name')}}
@@ -52,5 +53,4 @@
     </div>
 
     <a href="/group/{{$group->id}}" class="btn btn-default">Go Back</a>
-
 @endsection

@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     <h4>User: {{$request->user_name}}</h4>
     <h4>Group: {{$request->group_name}}</h4>
     <h4>Message: {{$request->message}}</h4>
@@ -18,5 +17,4 @@
     {!! Form::close() !!}
 
     <a href="/permissions" class="btn btn-default">Go Back</a>
-
 @endsection

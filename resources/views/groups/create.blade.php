@@ -5,8 +5,8 @@
 @endsection
 
 @section('content')
-
     <h1>Create Group</h1>
+    
     {!! Form::open(['action' => 'App\Http\Controllers\GroupsController@store', 'method' => 'POST']) !!}
     <div class="form-group">
         {{Form::label('name', 'Group Name')}}
@@ -43,5 +43,4 @@
 
     {{Form::submit('Create Group', ['class' => 'btn btn-primary'])}}
     {!! Form::close() !!}
-
 @endsection
