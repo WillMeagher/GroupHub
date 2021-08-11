@@ -25,21 +25,32 @@ class Group extends Model
         ->get();
     }
 
-    static function created($user_id) {
+    static function allCreated($username) {
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
         ->join('users', 'users.id', '=', 'groups.creator_id')
-        ->where('groups.creator_id', '=', $user_id)
+        ->where('users.name', '=', $username)
         ->get();
     }
 
-    static function joined($user_id) {
+    static function listedCreated($username) {
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
         ->join('users', 'users.id', '=', 'groups.creator_id')
+        ->where('users.name', '=', $username)
+        ->where('groups.privacy', '!=', 'Delisted')
+        ->get();
+    }
+
+    static function joined($username) {
+        return self::select('groups.*', 'c.name as creator_name', 'users.name as member_name')
+        ->from('groups')
         ->join('permissions', 'permissions.group_id', '=', 'groups.id')
-        ->where('permissions.user_id', '=', $user_id)
-        ->where('permissions.status', '=', 'accepted')
+        ->join('users', 'users.id', '=', 'permissions.user_id')
+        ->join('users as c', 'c.id', '=', 'groups.creator_id')
+        ->where('users.name', '=', $username)
+        ->where('permissions.status', '=', 'Accepted')
+        ->where('groups.privacy', '!=', 'Delisted')
         ->get();
     }
 

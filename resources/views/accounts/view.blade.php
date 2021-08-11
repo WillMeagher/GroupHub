@@ -13,8 +13,13 @@
                     <h4>School: {{$user->school}}</h4>
                     <h4>Year: {{$user->year}}</h4>
                     <h4>Major: {{$user->major}}</h4>
+                    
+                    @if (Auth::user()->id == $user->id)
+                        <a href="/account/{{ Auth::user()->name }}/edit" class="btn btn-default">Edit</a>
+                    @endif
+                    <a href="/account/{{ Auth::user()->name }}/joined" class="btn btn-default">Joined Groups</a>
+                    <a href="/account/{{ Auth::user()->name }}/created" class="btn btn-default">Created Groups</a>
 
-                    <a href="/account/edit" class="btn btn-default">Edit</a>
                 </div>
             </div>
         </div>

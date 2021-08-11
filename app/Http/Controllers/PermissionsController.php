@@ -50,7 +50,7 @@ class PermissionsController extends Controller
         $group = Group::find($group_id);
 
         if (empty($group) || $group->privacy == 'Delisted') {
-            return redirect('/group')->with('error', 'Group not found');
+            return redirect('/group/search')->with('error', 'Group not found');
         } else if (Permission::isMember(auth()->user()->id, $group_id)) {
             return redirect('/group/'.$group_id.'/join');
         } else if (Permission::exists(auth()->user()->id, $group_id)) {
@@ -122,9 +122,9 @@ class PermissionsController extends Controller
         $request = Permission::find($id);
 
         if (empty($request)) {
-            return redirect('/permissions')->with('error', 'Request not found');
+            return redirect('/notifications')->with('error', 'Request not found');
         } else if (auth()->user()->id !== Permission::owner($id)) {
-            return redirect('/permissions')->with('error', 'Unauthorized page');
+            return redirect('/notifications')->with('error', 'Unauthorized page');
         }
 
         return view('permissions.show')->with('request', $request);
@@ -146,12 +146,12 @@ class PermissionsController extends Controller
         $permission = Permission::find($id);
 
         if (empty($permission)) {
-            return redirect('/permissions')->with('error', 'Request not found');
+            return redirect('/notifications')->with('error', 'Request not found');
         } else if (auth()->user()->id !== $permission->group_creator_id) {
-            return redirect('/permissions')->with('error', 'Unauthorized page');
+            return redirect('/notifications')->with('error', 'Unauthorized page');
         } else if ($permission->status != 'Pending') {
             Log::error($permission);
-            return redirect('/permissions')->with('error', 'You have already '.$permission->status.' this request.');
+            return redirect('/notifications')->with('error', 'You have already '.$permission->status.' this request.');
         }
 
         $permission->notify = 1;
@@ -163,7 +163,7 @@ class PermissionsController extends Controller
             Group::incrementSize($permission->group_id);
         }
 
-        return redirect('/permissions')->with('success', 'Request '.$request->status);
+        return redirect('/notifications')->with('success', 'Request '.$request->status);
     }
 
     /**

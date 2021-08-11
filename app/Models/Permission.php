@@ -30,7 +30,8 @@ class Permission extends Model
         ->where(function($q) use ($user_id) {
             $q->where('permissions.user_id', '=',  $user_id)
                 ->where('permissions.status', '!=', 'Pending')
-                ->where('permissions.notify', '=', 1);})
+                ->where('permissions.notify', '=', 1);
+        })
         ->orWhere(function($q) use ($user_id) {
             $q->where('groups.creator_id', '=',  $user_id)
                 ->where('permissions.status', '=', 'Pending')

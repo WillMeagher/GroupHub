@@ -9,7 +9,6 @@
                     <li class="list-group-item">
                         <h3><a href="/group/{{$group->id}}"> Name: {{$group->name}} Creator: {{$group->creator_name}}</a></h3>
                         <small>Created on {{$group->created_at}}</small>
-                        <small>Score {{$group->score}}</small>
                     </li>
                 @endforeach
                 </ul>

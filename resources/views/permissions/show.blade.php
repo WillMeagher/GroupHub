@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <h4>User: {{$request->user_name}}</h4>
-    <h4>Group: {{$request->group_name}}</h4>
+    <h4>User: <a href="/account/{{$request->user_name}}">{{$request->user_name}}</a></h4>
+    <h4>Group: <a href="/group/{{$request->group_id}}">{{$request->group_name}}</a></h4>
     <h4>Message: {{$request->message}}</h4>
 
     <hr>

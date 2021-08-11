@@ -34,7 +34,7 @@
     {!! Form::close() !!}
 
     @if(count($groups) > 0)
-        <div class="card">
+        <div class="card mt-3">
             <ul class="list-group list-group-flush">
             @foreach($groups as $group)
                 <li class="list-group-item">

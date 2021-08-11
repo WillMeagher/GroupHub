@@ -11,6 +11,14 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    // returns a request 
+    static function find($name) {
+        return self::select('users.*')
+        ->from('users')
+        ->where('users.name', '=',  $name)
+        ->first();
+    }
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -19,8 +27,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
-        'gender',
+        'password'
     ];
 
     /**

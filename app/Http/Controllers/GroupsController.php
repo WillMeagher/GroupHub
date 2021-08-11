@@ -12,6 +12,11 @@ use App\Helpers\Inflect;
 
 //use Illuminate\Support\Facades\Log;
 
+// TODO look into filtering out old groups
+// TODO search by user - convert search to own controller
+// TODO add no created, no joined, and no found text
+// TODO convert group ids in links to names
+
 class GroupsController extends Controller
 {
     
@@ -22,8 +27,8 @@ class GroupsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['index', 'show']]);
-        $this->middleware('accountCreated', ['except' => ['index', 'show']]);
+        $this->middleware('auth', ['except' => ['index', 'show', 'search', 'results']]);
+        $this->middleware('accountCreated', ['except' => ['index', 'show', 'search', 'results']]);
     }
 
     /**
@@ -43,11 +48,19 @@ class GroupsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function created()
+    public function created($username)
     {
-        $groups = Group::created(auth()->user()->id);
+        $groups = auth()->user()->name == $username ? Group::allCreated($username) : Group::listedCreated($username);
 
-        return view('groups.index')->with('groups', $groups)->with('title', 'Your Created Groups');
+        if (empty($groups)) {
+            return redirect('/group/search')->with('error', 'User not found');
+        }
+
+        if (auth()->user()->name == $username) {
+            return view('groups.index')->with('groups', $groups)->with('title', 'Your Created Groups');
+        } else {
+            return view('groups.index')->with('groups', $groups)->with('title', $username."'s Created Groups");
+        }
     }
 
     /**
@@ -55,9 +68,9 @@ class GroupsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function joined()
+    public function joined($username)
     {
-        $groups = Group::joined(auth()->user()->id);
+        $groups = Group::joined($username);
 
         return view('groups.index')->with('groups', $groups)->with('title', 'Your Joined Groups');
     }
@@ -70,42 +83,6 @@ class GroupsController extends Controller
     public function search()
     {
         return view('groups.search')->with('options', self::dropdownOptions());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('groups.create')->with('options', self::dropdownOptions());
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $this->validate($request, self::createValidation(null, $request));
-
-        $group = new Group;
-
-        $group->name        = $request->input('name');
-        $group->link        = $request->input('link');
-        $group->platform    = $request->input('platform');
-        $group->type        = $request->input('type');
-        $group->privacy     = $request->input('privacy');
-        $group->description = $request->input('description') == null ? "" : $request->input('description');
-        $group->creator_id  = auth()->user()->id;
-        $group->size  = 1;
-
-        $group->save();
-
-        return redirect('/group/created')->with('success', 'Group created');
     }
 
     /**
@@ -161,12 +138,45 @@ class GroupsController extends Controller
             if ($request->privacy == 'Any' || $group->privacy == $request->privacy) {
                 $group['score'] += 3;
             }
-
-            error_log($group['score']);
-            
         }
 
-        return view('groups.results')->with('groups', $groups)->with('options', self::dropdownOptions())->with('request', $request);
+        return view('groups.results')->with('groups', $groups->sortByDesc('score'))->with('options', self::dropdownOptions())->with('request', $request);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('groups.create')->with('options', self::dropdownOptions());
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->validate($request, self::createValidation(null, $request));
+
+        $group = new Group;
+
+        $group->name        = $request->input('name');
+        $group->link        = $request->input('link');
+        $group->platform    = $request->input('platform');
+        $group->type        = $request->input('type');
+        $group->privacy     = $request->input('privacy');
+        $group->description = $request->input('description') == null ? "" : $request->input('description');
+        $group->creator_id  = auth()->user()->id;
+        $group->size        = 1;
+
+        $group->save();
+
+        return redirect('/account/'.auth()->user()->name.'/created')->with('success', 'Group created');
     }
 
     /**
@@ -180,9 +190,9 @@ class GroupsController extends Controller
         $group = Group::find($id);
 
         if (empty($group)) {
-            return redirect('/group')->with('error', 'Group not found');
-        } else if ($group->privacy == 'delisted' && auth()->user()->id !== $group->creator_id) {
-            return redirect('/group')->with('error', 'Unauthorized page');
+            return redirect('/group/search')->with('error', 'Group not found');
+        } else if ($group->privacy == 'Delisted' && auth()->user()->id !== $group->creator_id) {
+            return redirect('/group/search')->with('error', 'Unauthorized page');
         }
 
         return view('groups.show')->with('group', $group);
@@ -199,9 +209,9 @@ class GroupsController extends Controller
         $group = Group::find($id);
 
         if (empty($group)) {
-            return redirect('/group')->with('error', 'Group not found');
+            return redirect('/group/search')->with('error', 'Group not found');
         } else if (auth()->user()->id !== $group->creator_id && !Permission::isMember(auth()->user()->id, $group->id)) {
-            return redirect('/group')->with('error', 'Unauthorized page');
+            return redirect('/group/search')->with('error', 'Unauthorized page');
         }
 
         return view('groups.join')->with('group', $group);
@@ -218,9 +228,9 @@ class GroupsController extends Controller
         $group = Group::find($id);
 
         if (empty($group)) {
-            return redirect('/group/created')->with('error', 'Group not found');
+            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Group not found');
         } else if (auth()->user()->id !== $group->creator_id) {
-            return redirect('/group/created')->with('error', 'Unauthorized page');
+            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Unauthorized page');
         }
         
         return view('groups.edit')->with('group', $group)->with('options', self::dropdownOptions());
@@ -238,9 +248,9 @@ class GroupsController extends Controller
         $group = Group::find($id);
 
         if (empty($group)) {
-            return redirect('/group/created')->with('error', 'Group not found');
+            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Group not found');
         } else if (auth()->user()->id !== $group->creator_id) {
-            return redirect('/group/created')->with('error', 'Unauthorized page');
+            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Unauthorized page');
         }
 
         $this->validate($request, self::createValidation($group->id, $request));
@@ -254,7 +264,7 @@ class GroupsController extends Controller
 
         $group->save();
 
-        return redirect('/group/created')->with('success', 'Group updated');
+        return redirect('/account/'.auth()->user()->name.'/created')->with('success', 'Group updated');
     }
 
     /**
@@ -268,14 +278,14 @@ class GroupsController extends Controller
         $group = Group::find($id);
 
         if (empty($group)) {
-            return redirect('/group/created')->with('error', 'Group not found');
+            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Group not found');
         } else if (auth()->user()->id !== $group->creator_id) {
-            return redirect('/group/created')->with('error', 'Unauthorized page');
+            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Unauthorized page');
         }
 
         $group->delete();
 
-        return redirect('/group/created')->with('success', 'Group deleted');
+        return redirect('/account/'.auth()->user()->name.'/created')->with('success', 'Group deleted');
     }
     
     protected static $platformDropdowns = [
@@ -289,7 +299,10 @@ class GroupsController extends Controller
     protected static $typeDropdowns = [
         'Class',
         'Sports',
-        'Club',
+        'Clubs',
+        'Intermurals',
+        'Greek Life',
+        'Univerity Sponsored',
         'Other'
     ];
 
@@ -299,7 +312,7 @@ class GroupsController extends Controller
         'Delisted'
     ];
     
-    protected static $sortbyDropdowns = [
+    protected static $sortByDropdowns = [
         'Most Popular',
         'Newest',
         'Trending'
@@ -338,7 +351,7 @@ class GroupsController extends Controller
             'platform' =>       ['required', 'in:Any,'.implode(',', Self::$platformDropdowns)],
             'type' =>           ['required', 'in:Any,'.implode(',', Self::$typeDropdowns)],
             'privacy' =>        ['required', 'in:Any,'.implode(',', Self::$privacyDropdowns)],
-            'sortby' =>         ['required', 'in:'.implode(',', Self::$sortbyDropdowns)]
+            'sortby' =>         ['required', 'in:'.implode(',', Self::$sortByDropdowns)]
         ];
     }
 
@@ -360,8 +373,8 @@ class GroupsController extends Controller
         foreach(Self::$privacyDropdowns as $privacy) {
             $options['privacy'][$privacy] = $privacy;
         }
-        foreach(Self::$sortbyDropdowns as $sortby) {
-            $options['sortby'][$sortby] = $sortby;
+        foreach(Self::$sortByDropdowns as $sortBy) {
+            $options['sortby'][$sortBy] = $sortBy;
         }
 
         return $options;

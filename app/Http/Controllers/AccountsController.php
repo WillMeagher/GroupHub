@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class AccountsController extends Controller
 {
@@ -25,8 +26,9 @@ class AccountsController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        return view('accounts.view')->with('user', $user);
+        $users = User::all();
+        
+        return view('accounts.index')->with('users', $users);
     }
 
     /**
@@ -47,7 +49,6 @@ class AccountsController extends Controller
      */
     public function store(Request $request)
     {
-
         $this->validate($request, self::validationRules($request));
 
         $user = auth()->user();
@@ -60,17 +61,41 @@ class AccountsController extends Controller
 
         $user->save();
 
-        return redirect('/account')->with('success', 'Account created');
+        return redirect('/account/'.auth()->user()->name)->with('success', 'Account created');
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($name = null)
+    {
+        $user = User::find($name == null ? auth()->user()->name : $name);
+
+        if (empty($user)) {
+            return redirect('/account/'.auth()->user()->name)->with('error', 'User not found');
+        }
+
+        return view('accounts.view')->with('user', $user);
+    }
+
+    /**
+     * Show the form for editing the default resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit()
+    public function edit($name)
     {
-        $user = auth()->user();
+        $user = User::find($name);
+
+        if (empty($user)) {
+            return redirect('/account/'.auth()->user()->name)->with('error', 'User not found');
+        } else if (auth()->user()->id !== $user->id) {
+            return redirect('/account/'.auth()->user()->name)->with('error', 'Unauthorized page');
+        }
+
         return view('accounts.edit')->with('user', $user)->with('options', self::dropdownOptions());
     }
 
@@ -82,7 +107,6 @@ class AccountsController extends Controller
      */
     public function update(Request $request)
     {
-
         $this->validate($request, self::validationRules($request));
 
         $user = auth()->user();
@@ -94,7 +118,8 @@ class AccountsController extends Controller
 
         $user->save();
 
-        return redirect('/account')->with('success', 'Account updated');    }
+        return redirect('/account/'.auth()->user()->name)->with('success', 'Account updated');
+    }
 
     protected static $genderDropdowns = [
         'Male',
