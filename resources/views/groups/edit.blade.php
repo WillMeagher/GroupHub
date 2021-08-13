@@ -7,7 +7,7 @@
 @section('content')
     <h1>Edit Group</h1>
     
-    {!! Form::open(['action' => ['App\Http\Controllers\GroupsController@update', $group->id], 'method' => 'POST']) !!}
+    {!! Form::open(['action' => ['App\Http\Controllers\GroupsController@update', $group->name], 'method' => 'POST']) !!}
     <div class="form-group">
         {{Form::label('name', 'Group Name')}}
         {{Form::text('name', $group->name, ['class' => 'form-control'])}}
@@ -46,11 +46,11 @@
         {{Form::submit('Update Group', ['class' => 'btn btn-primary'])}}
         {!! Form::close() !!}
     
-        {!!Form::open(['action'=>['App\Http\Controllers\GroupsController@destroy', $group->id], 'method' => 'POST', 'class' => 'pull-right'])!!}
+        {!!Form::open(['action'=>['App\Http\Controllers\GroupsController@destroy', $group->name], 'method' => 'POST', 'class' => 'pull-right'])!!}
         {{Form::hidden('_method', 'DELETE')}}
         {{Form::submit('Delete', ['class' => 'btn btn-danger'])}}
         {!!Form::close()!!}
     </div>
 
-    <a href="/group/{{$group->id}}" class="btn btn-default">Go Back</a>
+    <a href="/group/{{$group->name}}" class="btn btn-default">Go Back</a>
 @endsection

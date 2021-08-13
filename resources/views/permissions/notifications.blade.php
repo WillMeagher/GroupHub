@@ -5,12 +5,12 @@
 
     @if(count($newNotifications) > 0)
         <h2>&emsp;New Notifications</h2>
-        <div class="card">
+        <div class="card mt-3">
             <ul class="list-group list-group-flush">
             @foreach($newNotifications as $notification)
                 <li class="list-group-item">
                     @if (Auth::user()->id == $notification->user_id)
-                        <h3><a href="/group/{{$notification->group_id}}/join"> You have been {{$notification->status}} <?php echo $notification->status == 'Accepted' ? 'to' : 'from'?> <b>{{$notification->group_name}}</b></a></h3>
+                        <h3><a href="/group/{{$notification->group_name}}/join"> You have been {{$notification->status}} <?php echo $notification->status == 'Accepted' ? 'to' : 'from'?> <b>{{$notification->group_name}}</b></a></h3>
                     @else 
                         <h3><a href="/permissions/{{$notification->id}}"> <b>{{$notification->user_name}}</b> wants to join <b>{{$notification->group_name}}</b></a></h3>
                         <small><b>Message:</b> {{$notification->message}}</small>
@@ -24,12 +24,12 @@
 
     @if(count($oldNotifications) > 0)
         <h2>&emsp;Old Notifications</h2>
-        <div class="card">
+        <div class="card mt-3">
             <ul class="list-group list-group-flush">
             @foreach($oldNotifications as $notification)
                 <li class="list-group-item">
                     @if (Auth::user()->id == $notification->user_id)
-                        <h3><a href="/group/{{$notification->group_id}}"> You have been {{$notification->status}} <?php echo $notification->status == 'Accepted' ? 'to' : 'from'?> <b>{{$notification->group_name}}</b></a></h3>
+                        <h3><a href="/group/{{$notification->group_name}}"> You have been {{$notification->status}} <?php echo $notification->status == 'Accepted' ? 'to' : 'from'?> <b>{{$notification->group_name}}</b></a></h3>
                     @else 
                         <h3><a href="/permissions/{{$notification->id}}"> <b>{{$notification->user_name}}</b> wants to join <b>{{$notification->group_name}}</b></a></h3>
                         <small><b>Message:</b> {{$notification->message}}</small>

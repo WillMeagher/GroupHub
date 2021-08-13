@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Helpers\Options;
 
 class AccountsController extends Controller
 {
@@ -38,7 +39,7 @@ class AccountsController extends Controller
      */
     public function create()
     {
-        return view('accounts.create')->with('options', self::dropdownOptions());
+        return view('accounts.create')->with('options', Options::accounts());
     }
 
     /**
@@ -67,7 +68,7 @@ class AccountsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param string $name
      * @return \Illuminate\Http\Response
      */
     public function show($name = null)
@@ -84,6 +85,7 @@ class AccountsController extends Controller
     /**
      * Show the form for editing the default resource.
      *
+     * @param string $name
      * @return \Illuminate\Http\Response
      */
     public function edit($name)
@@ -96,7 +98,7 @@ class AccountsController extends Controller
             return redirect('/account/'.auth()->user()->name)->with('error', 'Unauthorized page');
         }
 
-        return view('accounts.edit')->with('user', $user)->with('options', self::dropdownOptions());
+        return view('accounts.edit')->with('user', $user)->with('options', Options::accounts());
     }
 
     /**
@@ -121,34 +123,6 @@ class AccountsController extends Controller
         return redirect('/account/'.auth()->user()->name)->with('success', 'Account updated');
     }
 
-    protected static $genderDropdowns = [
-        'Male',
-        'Female',
-        'Non-Binary'
-    ];
-
-    protected static $schoolDropdowns = [
-        'UMD',
-        'GC',
-        'AMU'
-    ];
-
-    protected static $majorDropdowns = [
-        'Computer Science',
-        'Biology',
-        'Electrical Engineering',
-        'History'
-    ];
-
-    protected static $yearDropdowns = [
-        'Undergraduate Freshman',
-        'Undergraduate Sophomore',
-        'Undergraduate Junior',
-        'Undergraduate Senior',
-        'Graduate Freshman',
-        'Other'
-    ];
-
     /**
      * Get a validation rules for an incoming request.
      *
@@ -157,32 +131,13 @@ class AccountsController extends Controller
      */
     protected function validationRules($request)
     {
+        $options = Options::accounts();
+
         return [
-            'gender' => ['required', 'in:'.implode(',', Self::$genderDropdowns)],
-            'school' => ['required', 'in:'.implode(',', Self::$schoolDropdowns)],
-            'major' =>  ['required', 'in:'.implode(',', Self::$majorDropdowns)],
-            'year' =>   ['required', 'in:'.implode(',', Self::$yearDropdowns)],
+            'gender' => ['required', 'in:'.implode(',', $options['gender'])],
+            'school' => ['required', 'in:'.implode(',', $options['school'])],
+            'major' =>  ['required', 'in:'.implode(',', $options['major'])],
+            'year' =>   ['required', 'in:'.implode(',', $options['year'])],
         ];
-    }
-
-    private static function dropdownOptions() 
-    {
-        foreach(Self::$genderDropdowns as $gender) {
-            $options['gender'][$gender] = $gender;
-        }
-
-        foreach(Self::$schoolDropdowns as $school) {
-            $options['school'][$school] = $school;
-        }
-
-        foreach(Self::$majorDropdowns as $major) {
-            $options['major'][$major] = $major;
-        }
-
-        foreach(Self::$yearDropdowns as $year) {
-            $options['year'][$year] = $year;
-        }
-
-        return $options;
     }
 }

@@ -42,23 +42,24 @@ class PermissionsController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     * 
+     * @param  int  $group_id
      * @return \Illuminate\Http\Response
      */
-    public function create($group_id)
+    public function create($name)
     {
-        $group = Group::find($group_id);
+        $group = Group::find($name);
 
         if (empty($group) || $group->privacy == 'Delisted') {
-            return redirect('/group/search')->with('error', 'Group not found');
-        } else if (Permission::isMember(auth()->user()->id, $group_id)) {
-            return redirect('/group/'.$group_id.'/join');
-        } else if (Permission::exists(auth()->user()->id, $group_id)) {
-            return redirect('/group/'.$group_id)->with('error', 'You already have an entry in our database for this group');
+            return redirect('/search')->with('error', 'Group not found');
+        } else if (Permission::isMember(auth()->user()->id, $group->id)) {
+            return redirect('/group/'.$name.'/join');
+        } else if (Permission::exists(auth()->user()->id, $group->id)) {
+            return redirect('/group/'.$name)->with('error', 'You already have an entry in our database for this group');
         } else if ($group->privacy == 'Public') {
             $request = new \Illuminate\Http\Request;
             $request->setMethod('POST');
-            $request->request->add(['group_id' => $group->id]);
+            $request->request->add(['name' => $group->name]);
             return $this->store($request);
         }
 
@@ -78,18 +79,18 @@ class PermissionsController extends Controller
         
         $this->validate($request, self::createValidationRules($request));
 
-        $group = Group::find($request->input('group_id'));
+        $group = Group::find($request->input('name'));
 
         if (empty($group) || $group->privacy == 'Delisted') {
             return redirect('/group')->with('error', 'Group not found');
-        } else if (Permission::exists(auth()->user()->id, $request->input('group_id'))) {
-            return redirect('/group/'.$request->input('group_id'))->with('error', 'You already have already requested to join this group');
+        } else if (Permission::exists(auth()->user()->id, $group->id)) {
+            return redirect('/group/'.$group->name)->with('error', 'You already have already requested to join this group');
         }
 
         $permissions = new Permission;
 
         $permissions->user_id = auth()->user()->id;
-        $permissions->group_id = $request->input('group_id');
+        $permissions->group_id = $group->id;
 
         if ($group->privacy == 'Public') {
             $permissions->message = '';
@@ -99,14 +100,14 @@ class PermissionsController extends Controller
 
             Group::incrementSize($permissions->group_id);
 
-            return redirect('/group/'.$request->input('group_id').'/join');
+            return redirect('/group/'.$group->name.'/join');
         } else {
             $permissions->message = $request->input('message');
             $permissions->status = 'Pending';
             $permissions->notify = 1;
             $permissions->save();
 
-            return redirect('/group/'.$request->input('group_id'))->with('success', 'Request Sent');
+            return redirect('/group/'.$group->name)->with('success', 'Request Sent');
         }
     }
 
@@ -175,7 +176,7 @@ class PermissionsController extends Controller
     protected function createValidationRules($request) 
     {
         return [
-            'group_id' => ['required', 'integer'],
+            'name' => ['required'],
             'message'  => ['max:1024']
         ];
     }
@@ -189,7 +190,7 @@ class PermissionsController extends Controller
     protected function updateValidationRules($request) 
     {
         return [
-            'group_id' => ['required', 'integer'],
+            'name' => ['required'],
             'status' => ['required', 'in:Accepted,Denied']
         ];
     }    

@@ -17,7 +17,7 @@
         {{Form::textArea('message', '', ['class' => 'form-control input', 'placeholder' => 'Message'])}}
     </div>
 
-    {{Form::hidden('group_id', $group->id)}}
+    {{Form::hidden('name', $group->name)}}
     {{Form::submit('Send Request', ['class' => 'btn btn-primary'])}}
     {!! Form::close() !!}
 @endsection

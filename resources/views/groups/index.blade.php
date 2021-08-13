@@ -2,16 +2,20 @@
 
 @section('content')
     <h1>{{isset($title) ? $title : 'Groups'}}</h1>
-        @if(count($groups) > 0)
-            <div class="card">
-                <ul class="list-group list-group-flush">
+    <div class="card mt-3">
+        <ul class="list-group list-group-flush">
+            @if(count($groups) > 0)
                 @foreach($groups as $group)
                     <li class="list-group-item">
-                        <h3><a href="/group/{{$group->id}}"> Name: {{$group->name}} Creator: {{$group->creator_name}}</a></h3>
+                        <h3><a href="/group/{{$group->name}}"> Name: {{$group->name}} Creator: {{$group->creator_name}}</a></h3>
                         <small>Created on {{$group->created_at}}</small>
                     </li>
                 @endforeach
-                </ul>
-            </div>
-        @endif
+            @else
+                <li class="list-group-item">
+                    <h3 class="m-2">No Results</h3>
+                </li>
+            @endif
+        </ul>
+    </div>
 @endsection

@@ -21,11 +21,12 @@ Route::resource('/account', 'App\Http\Controllers\AccountsController', ['only' =
 Route::get('/account/{user}/created', 'App\Http\Controllers\GroupsController@created');
 Route::get('/account/{user}/joined', 'App\Http\Controllers\GroupsController@joined');
 
-Route::get('/', 'App\Http\Controllers\GroupsController@search');
-Route::get('/group/search', 'App\Http\Controllers\GroupsController@search');
 Route::get('/group/{group}/join', 'App\Http\Controllers\GroupsController@join');
-Route::match(array('GET', 'POST'), '/group/results', 'App\Http\Controllers\GroupsController@results');
 Route::resource('/group', 'App\Http\Controllers\GroupsController');
+
+Route::get('/', 'App\Http\Controllers\SearchController@search');
+Route::get('/search', 'App\Http\Controllers\SearchController@search');
+Route::match(array('GET', 'POST'), '/results', 'App\Http\Controllers\SearchController@results');
 
 Route::get('/notifications', 'App\Http\Controllers\PermissionsController@index');
 Route::get('/permissions/{group}/create', 'App\Http\Controllers\PermissionsController@create');

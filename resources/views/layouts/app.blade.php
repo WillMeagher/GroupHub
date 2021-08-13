@@ -46,7 +46,7 @@
                                 <a class="nav-link" href="/group/create">Create</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/group/search">Search</a>
+                                <a class="nav-link" href="/search">Search</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/notifications">Notifications</a>

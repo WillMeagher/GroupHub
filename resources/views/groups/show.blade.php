@@ -14,8 +14,8 @@
     <hr>
     <a href="/group" class="btn btn-default">Go Back</a>
     @if(!Auth::guest() && Auth::user()->id == $group->creator_id)
-        <a href="/group/{{$group->id}}/edit" class="btn btn-default">Edit</a>
+        <a href="/group/{{$group->name}}/edit" class="btn btn-default">Edit</a>
     @else
-        <a href="/permissions/{{$group->id}}/create" class="btn btn-default">Join</a>
+        <a href="/permissions/{{$group->name}}/create" class="btn btn-default">Join</a>
     @endif
 @endsection
