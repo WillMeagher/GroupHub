@@ -1,4 +1,10 @@
+$(updateQuestions());
+
 $('#searchfor').on("change", function() {
+    updateQuestions();
+});
+
+function updateQuestions() {
     if($('#searchfor :selected').text() === "Groups"){
         $("#platform_div").show();
         $("#type_div").show();
@@ -8,4 +14,4 @@ $('#searchfor').on("change", function() {
         $("#type_div").hide();
         $("#privacy_div").hide();                  
     }
-});
+}

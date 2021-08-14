@@ -52,7 +52,7 @@
                                 <a class="nav-link" href="/notifications">Notifications</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/account/{{ Auth::user()->name }}">Account</a>
+                                <a class="nav-link" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}">Account</a>
                             </li>
                         @endauth
                     </ul>
@@ -79,9 +79,9 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/account/{{ Auth::user()->name }}/joined">Joined Groups</a>
-                                    <a class="dropdown-item" href="/account/{{ Auth::user()->name }}/created">Created Groups</a>
-                                    <a class="dropdown-item" href="/account/{{ Auth::user()->name }}/edit">Edit Account</a>
+                                    <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/joined">Joined Groups</a>
+                                    <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/created">Created Groups</a>
+                                    <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/edit">Edit Account</a>
 
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();

@@ -49,11 +49,24 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        return Validator::make(
+            $data,
+            $rules = [
+                'name' => ['required', 'string', 'not_regex:/_/', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'string', 'min:8', 'confirmed']
+            ], 
+            $messages = [
+                'not_regex' => 'Your name cannot contain any underscores'
+            ]
+        );
+    }
+
+    public function messages()
+    {
+        return [
+            'name.not_regex' => 'Your name my not include any underscores',
+        ];
     }
 
     /**

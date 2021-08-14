@@ -10,10 +10,11 @@ class Group extends Model
     use HasFactory;
     
     static function find($name) {
+    
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
         ->join('users', 'users.id', '=', 'groups.creator_id')
-        ->where('groups.name', '=', $name)
+        ->where('groups.name', '=', str_replace("_", " ", $name))
         ->first();
     }
 
@@ -29,7 +30,7 @@ class Group extends Model
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
         ->join('users', 'users.id', '=', 'groups.creator_id')
-        ->where('users.name', '=', $username)
+        ->where('users.name', '=', str_replace("_", " ", $username))
         ->get();
     }
 
@@ -37,7 +38,7 @@ class Group extends Model
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
         ->join('users', 'users.id', '=', 'groups.creator_id')
-        ->where('users.name', '=', $username)
+        ->where('users.name', '=', str_replace("_", " ", $username))
         ->where('groups.privacy', '!=', 'Delisted')
         ->get();
     }
@@ -48,7 +49,7 @@ class Group extends Model
         ->join('permissions', 'permissions.group_id', '=', 'groups.id')
         ->join('users', 'users.id', '=', 'permissions.user_id')
         ->join('users as c', 'c.id', '=', 'groups.creator_id')
-        ->where('users.name', '=', $username)
+        ->where('users.name', '=', str_replace("_", " ", $username))
         ->where('permissions.status', '=', 'Accepted')
         ->where('groups.privacy', '!=', 'Delisted')
         ->get();

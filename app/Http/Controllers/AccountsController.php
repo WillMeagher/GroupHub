@@ -62,7 +62,7 @@ class AccountsController extends Controller
 
         $user->save();
 
-        return redirect('/account/'.auth()->user()->name)->with('success', 'Account created');
+        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('success', 'Account created');
     }
 
     /**
@@ -76,7 +76,7 @@ class AccountsController extends Controller
         $user = User::find($name == null ? auth()->user()->name : $name);
 
         if (empty($user)) {
-            return redirect('/account/'.auth()->user()->name)->with('error', 'User not found');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'User not found');
         }
 
         return view('accounts.view')->with('user', $user);
@@ -93,9 +93,9 @@ class AccountsController extends Controller
         $user = User::find($name);
 
         if (empty($user)) {
-            return redirect('/account/'.auth()->user()->name)->with('error', 'User not found');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'User not found');
         } else if (auth()->user()->id !== $user->id) {
-            return redirect('/account/'.auth()->user()->name)->with('error', 'Unauthorized page');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'Unauthorized page');
         }
 
         return view('accounts.edit')->with('user', $user)->with('options', Options::accounts());
@@ -120,7 +120,7 @@ class AccountsController extends Controller
 
         $user->save();
 
-        return redirect('/account/'.auth()->user()->name)->with('success', 'Account updated');
+        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('success', 'Account updated');
     }
 
     /**

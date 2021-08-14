@@ -53,9 +53,9 @@ class PermissionsController extends Controller
         if (empty($group) || $group->privacy == 'Delisted') {
             return redirect('/search')->with('error', 'Group not found');
         } else if (Permission::isMember(auth()->user()->id, $group->id)) {
-            return redirect('/group/'.$name.'/join');
+            return redirect('/group/'.str_replace(" ", "_", $name).'/join');
         } else if (Permission::exists(auth()->user()->id, $group->id)) {
-            return redirect('/group/'.$name)->with('error', 'You already have an entry in our database for this group');
+            return redirect('/group/'.str_replace(" ", "_", $name))->with('error', 'You already have an entry in our database for this group');
         } else if ($group->privacy == 'Public') {
             $request = new \Illuminate\Http\Request;
             $request->setMethod('POST');
@@ -84,7 +84,7 @@ class PermissionsController extends Controller
         if (empty($group) || $group->privacy == 'Delisted') {
             return redirect('/group')->with('error', 'Group not found');
         } else if (Permission::exists(auth()->user()->id, $group->id)) {
-            return redirect('/group/'.$group->name)->with('error', 'You already have already requested to join this group');
+            return redirect('/group/'.str_replace(" ", "_", $group->name))->with('error', 'You already have already requested to join this group');
         }
 
         $permissions = new Permission;
@@ -100,14 +100,14 @@ class PermissionsController extends Controller
 
             Group::incrementSize($permissions->group_id);
 
-            return redirect('/group/'.$group->name.'/join');
+            return redirect('/group/'.str_replace(" ", "_", $group->name).'/join');
         } else {
             $permissions->message = $request->input('message');
             $permissions->status = 'Pending';
             $permissions->notify = 1;
             $permissions->save();
 
-            return redirect('/group/'.$group->name)->with('success', 'Request Sent');
+            return redirect('/group/'.str_replace(" ", "_", $group->name))->with('success', 'Request Sent');
         }
     }
 

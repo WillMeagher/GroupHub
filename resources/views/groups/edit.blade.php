@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('head')
-    <script src="{{ asset('js/groupCreate.js') }}" defer></script>
+    <script src="{{ asset('js/characterCount.js') }}" defer></script>
 @endsection
 
 @section('content')
@@ -38,7 +38,7 @@
             {{Form::label('description', 'Description')}}
             <div id='current-count' class='ml-auto text-secondary small'></div>
         </div>
-        {{Form::textArea('description', $group->description, ['class' => 'form-control', 'placeholder' => 'Description'])}}
+        {{Form::textArea('description', $group->description, ['class' => 'form-control input', 'placeholder' => 'Description'])}}
     </div>
 
     <div class="d-flex">
@@ -52,5 +52,5 @@
         {!!Form::close()!!}
     </div>
 
-    <a href="/group/{{$group->name}}" class="btn btn-default">Go Back</a>
+    <a href="/group/{{str_replace(" ", "_", $group->name)}}" class="btn btn-default">Go Back</a>
 @endsection

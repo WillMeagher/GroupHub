@@ -15,7 +15,7 @@ class User extends Authenticatable
     static function find($name) {
         return self::select('users.*')
         ->from('users')
-        ->where('users.name', '=',  $name)
+        ->where('users.name', '=', str_replace("_", " ", $name))
         ->first();
     }
     

@@ -13,7 +13,7 @@ use App\Helpers\Options;
 // TODO look into filtering out old groups
 // TODO search by user
 // TODO add notification for user joining public group
-// TODO convert spaces in links into underscores
+// TODO fix validation to be just a validator
 // TODO hash permissions ids in url
 
 class GroupsController extends Controller
@@ -92,7 +92,7 @@ class GroupsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, self::createValidation(null, $request));
+        $this->validate($request, self::createValidation(null, $request), ['not_regex' => 'Your group name cannot contain any underscores']);
 
         $group = new Group;
 
@@ -107,7 +107,7 @@ class GroupsController extends Controller
 
         $group->save();
 
-        return redirect('/account/'.auth()->user()->name.'/created')->with('success', 'Group created');
+        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('success', 'Group created');
     }
 
     /**
@@ -159,9 +159,9 @@ class GroupsController extends Controller
         $group = Group::find($name);
 
         if (empty($group)) {
-            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Group not found');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('error', 'Group not found');
         } else if (auth()->user()->id !== $group->creator_id) {
-            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Unauthorized page');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('error', 'Unauthorized page');
         }
         
         return view('groups.edit')->with('group', $group)->with('options', Options::groups());
@@ -179,12 +179,12 @@ class GroupsController extends Controller
         $group = Group::find($name);
 
         if (empty($group)) {
-            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Group not found');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('error', 'Group not found');
         } else if (auth()->user()->id !== $group->creator_id) {
-            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Unauthorized page');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('error', 'Unauthorized page');
         }
 
-        $this->validate($request, self::createValidation($group->id, $request));
+        $this->validate($request, self::createValidation($group->id, $request), ['not_regex' => 'Your group name cannot contain any underscores']);
 
         $group->name        = $request->input('name');
         $group->link        = $request->input('link');
@@ -195,7 +195,7 @@ class GroupsController extends Controller
 
         $group->save();
 
-        return redirect('/account/'.auth()->user()->name.'/created')->with('success', 'Group updated');
+        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('success', 'Group updated');
     }
 
     /**
@@ -209,14 +209,14 @@ class GroupsController extends Controller
         $group = Group::find($name);
 
         if (empty($group)) {
-            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Group not found');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('error', 'Group not found');
         } else if (auth()->user()->id !== $group->creator_id) {
-            return redirect('/account/'.auth()->user()->name.'/created')->with('error', 'Unauthorized page');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('error', 'Unauthorized page');
         }
 
         $group->delete();
 
-        return redirect('/account/'.auth()->user()->name.'/created')->with('success', 'Group deleted');
+        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('success', 'Group deleted');
     }
 
     /**
@@ -230,7 +230,7 @@ class GroupsController extends Controller
     {
         $options = Options::groups();
         return [
-            'name' =>           ['required', Rule::unique('groups')->ignore($group_id)],
+            'name' =>           ['required', 'not_regex:/_/', Rule::unique('groups')->ignore($group_id)],
             'link' =>           ['required', Rule::unique('groups')->ignore($group_id)],
             'platform' =>       ['required', 'in:'.implode(',', $options['platform'])],
             'type' =>           ['required', 'in:'.implode(',', $options['type'])],
