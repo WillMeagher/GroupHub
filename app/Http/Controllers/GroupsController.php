@@ -7,14 +7,13 @@ use Illuminate\Validation\Rule;
 use App\Models\Group;
 use App\Models\Permission;
 use App\Helpers\Options;
+use Illuminate\Support\Facades\Validator;
 
 //use Illuminate\Support\Facades\Log;
 
 // TODO look into filtering out old groups
-// TODO search by user
 // TODO add notification for user joining public group
-// TODO fix validation to be just a validator
-// TODO hash permissions ids in url
+// TODO look into what happens to outstanding requests when groups are transitioned form private to public
 
 class GroupsController extends Controller
 {
@@ -92,7 +91,7 @@ class GroupsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, self::createValidation(null, $request), ['not_regex' => 'Your group name cannot contain any underscores']);
+        $this::validator(null, $request->all())->validate();
 
         $group = new Group;
 
@@ -184,7 +183,7 @@ class GroupsController extends Controller
             return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('error', 'Unauthorized page');
         }
 
-        $this->validate($request, self::createValidation($group->id, $request), ['not_regex' => 'Your group name cannot contain any underscores']);
+        $this::validator($group->id, $request->all())->validate();
 
         $group->name        = $request->input('name');
         $group->link        = $request->input('link');
@@ -220,40 +219,27 @@ class GroupsController extends Controller
     }
 
     /**
-     * Get a validation rules for an incoming request.
-     *
-     * @param  int  $group_id
-     * @param  array  $request
-     * @return array
+     * Get a validator for an incoming create request.
+     * @param int $group_id
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function createValidation($group_id, $request) 
+    protected function validator($group_id, array $data)
     {
         $options = Options::groups();
-        return [
-            'name' =>           ['required', 'not_regex:/_/', Rule::unique('groups')->ignore($group_id)],
-            'link' =>           ['required', Rule::unique('groups')->ignore($group_id)],
-            'platform' =>       ['required', 'in:'.implode(',', $options['platform'])],
-            'type' =>           ['required', 'in:'.implode(',', $options['type'])],
-            'privacy' =>        ['required', 'in:'.implode(',', $options['privacy'])],
-            'description' =>    ['max:1024']
-        ];
-    }
-
-    /**
-     * Get a validation rules for an incoming request.
-     *
-     * @param  array  $request
-     * @return array
-     */
-    protected function searchValidation($request) 
-    {
-        $options = Options::groups();
-        return [
-            'search' =>         ['required', 'max:128'],
-            'platform' =>       ['required', 'in:Any,'.implode(',', $options['platform'])],
-            'type' =>           ['required', 'in:Any,'.implode(',', $options['type'])],
-            'privacy' =>        ['required', 'in:Any,'.implode(',', $options['privacy'])],
-            'searchfor' =>      ['required', 'in:'.implode(',', $options['searchfor'])]
-        ];
+        return Validator::make(
+            $data,
+            $rules = [
+                'name' =>           ['required', 'not_regex:/_/', Rule::unique('groups')->ignore($group_id)],
+                'link' =>           ['required', Rule::unique('groups')->ignore($group_id)],
+                'platform' =>       ['required', 'in:'.implode(',', $options['platform'])],
+                'type' =>           ['required', 'in:'.implode(',', $options['type'])],
+                'privacy' =>        ['required', 'in:'.implode(',', $options['privacy'])],
+                'description' =>    ['max:1024']
+            ], 
+            $messages = [
+                'not_regex' => 'Your group name cannot contain any underscores'
+            ]
+        );
     }
 }

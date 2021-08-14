@@ -62,13 +62,6 @@ class RegisterController extends Controller
         );
     }
 
-    public function messages()
-    {
-        return [
-            'name.not_regex' => 'Your name my not include any underscores',
-        ];
-    }
-
     /**
      * Create a new user instance after a valid registration.
      *

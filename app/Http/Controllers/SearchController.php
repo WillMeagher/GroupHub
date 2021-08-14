@@ -30,7 +30,7 @@ class SearchController extends Controller
      */
     public function results(Request $request)
     {
-        $validator = Validator::make($request->all(), self::searchValidation($request));
+        $validator = $this::validator($request->all());
 
         if ($validator->fails()) {
             return redirect('/search')->withErrors($validator)->withInput();
@@ -102,20 +102,24 @@ class SearchController extends Controller
     }
 
     /**
-     * Get a validation rules for an incoming request.
-     *
-     * @param  array  $request
-     * @return array
+     * Get a validator for an incoming create request.
+     * 
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function searchValidation($request) 
+    protected function validator(array $data)
     {
         $options = Options::groups();
-        return [
-            'search' =>         ['required', 'max:128'],
-            'searchfor' =>      ['required', 'in:'.implode(',', $options['searchfor'])],
-            'platform' =>       ['required', 'in:Any,'.implode(',', $options['platform'])],
-            'type' =>           ['required', 'in:Any,'.implode(',', $options['type'])],
-            'privacy' =>        ['required', 'in:Any,'.implode(',', $options['privacy'])]
-        ];
+        return Validator::make(
+            $data,
+            $rules = [
+                'search' =>         ['required', 'max:128'],
+                'searchfor' =>      ['required', 'in:'.implode(',', $options['searchfor'])],
+                'platform' =>       ['required', 'in:Any,'.implode(',', $options['platform'])],
+                'type' =>           ['required', 'in:Any,'.implode(',', $options['type'])],
+                'privacy' =>        ['required', 'in:Any,'.implode(',', $options['privacy'])]
+            ], 
+            $messages = []
+        );
     }
 }
