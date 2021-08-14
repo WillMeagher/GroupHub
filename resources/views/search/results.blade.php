@@ -39,12 +39,18 @@
 
     <div class="card mt-3">
         <ul class="list-group list-group-flush">
-            @if(count($groups) > 0)
-                @foreach($groups as $group)
+            @if(count($results) > 0)
+                @foreach($results as $result)
                     <li class="list-group-item">
-                        <h3><a href="/group/{{str_replace(" ", "_", $group->name)}}"> Name: {{$group->name}} Creator: {{$group->creator_name}}</a></h3>
-                        <small>Created on {{$group->created_at}}</small>
-                        <small>Score {{$group->score}}</small>
+                        @if (isset($result->creator_name))
+                            <h3><a href="/group/{{str_replace(" ", "_", $result->name)}}"> Name: {{$result->name}} Creator: {{$result->creator_name}}</a></h3>
+                            <small>Created on {{$result->created_at}}</small>
+                            <small>Score {{$result->score}}</small>                            
+                        @else
+                            <h3><a href="/account/{{str_replace(" ", "_", $result->name)}}"> Name: {{$result->name}}</a></h3>
+                            <small>Created on {{$result->created_at}}</small>
+                            <small>Score {{$result->score}}</small>
+                        @endif
                     </li>
                 @endforeach
             @else

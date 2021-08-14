@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\Options;
 use App\Models\Group;
+use App\Models\User;
 use PhpSpellcheck\SpellChecker\Aspell;
 use App\Helpers\Inflect;
 use \Validator;
@@ -78,11 +79,26 @@ class SearchController extends Controller
                 }
             }
     
-            return view('search.results')->with('groups', $groups->sortByDesc('score'))->with('options', Options::groups($request))->with('request', $request);
+            return view('search.results')->with('results', $groups->sortByDesc('score'))->with('options', Options::groups($request))->with('request', $request);
         } else {
+            
+            $users = User::all();
 
+            $searchWords = array_filter(preg_split('/( |-|\/)/', strtolower($request->search)), 'strlen');
+    
+            foreach ($users as $user) {
+                $user['score'] = 0;
+    
+                foreach ($searchWords as $word) {
+                    if (in_array($word, preg_split('/( |-|\/)/', strtolower($user->name)))) {
+                        $user['score'] += 20;
+                        continue;
+                    }
+                }
+            }
+    
+            return view('search.results')->with('results', $users->sortByDesc('score'))->with('options', Options::groups($request))->with('request', $request);
         }
-
     }
 
     /**

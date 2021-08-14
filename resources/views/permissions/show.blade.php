@@ -16,5 +16,5 @@
     {{Form::button('Deny', ['type' => 'submit', 'class' => 'btn btn-primary', 'name' => 'status', 'value' => 'Denied'])}}
     {!! Form::close() !!}
 
-    <a href="/permissions" class="btn btn-default">Go Back</a>
+    <a href="/permissions" class="btn btn-default border-dark">Go Back</a>
 @endsection

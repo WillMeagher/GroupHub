@@ -12,10 +12,10 @@
     <hr>
     <small>Created on {{$group->created_at}}</small>
     <hr>
-    <a href="/group" class="btn btn-default">Go Back</a>
+    <a href="/group" class="btn btn-default border-dark">Go Back</a>
     @if(!Auth::guest() && Auth::user()->id == $group->creator_id)
-        <a href="/group/{{str_replace(" ", "_", $group->name)}}/edit" class="btn btn-default">Edit</a>
+        <a href="/group/{{str_replace(" ", "_", $group->name)}}/edit" class="btn btn-default border-dark">Edit</a>
     @else
-        <a href="/permissions/{{str_replace(" ", "_", $group->name)}}/create" class="btn btn-default">Join</a>
+        <a href="/permissions/{{str_replace(" ", "_", $group->name)}}/create" class="btn btn-default border-dark">Join</a>
     @endif
 @endsection
