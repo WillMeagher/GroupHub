@@ -194,6 +194,10 @@ class GroupsController extends Controller
 
         $group->save();
 
+        if ($group->privacy == 'Public') {
+            Permission::acceptPending($group);
+        }
+
         return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('success', 'Group updated');
     }
 

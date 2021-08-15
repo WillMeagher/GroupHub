@@ -18,9 +18,10 @@ class CreatePermissionsTable extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('group_id')->unsigned();
-            $table->text('message');
+            $table->text('message')->nullable();
             $table->enum('status', ['Pending', 'Accepted', 'Denied']);
-            $table->boolean('notify');
+            $table->bigInteger('notify_user')->unsigned()->nullable();
+            $table->boolean('viewed');
             $table->timestamps();
         });
 

@@ -91,11 +91,13 @@ class PermissionsController extends Controller
 
         $permissions->user_id = auth()->user()->id;
         $permissions->group_id = $group->id;
+        $permissions->notify_user = $group->creator_id;
+        $permissions->viewed = 0;
 
         if ($group->privacy == 'Public') {
-            $permissions->message = '';
+            $permissions->message = null;
             $permissions->status = 'Accepted';
-            $permissions->notify = 0;
+
             $permissions->save();
 
             Group::incrementSize($permissions->group_id);
@@ -104,7 +106,7 @@ class PermissionsController extends Controller
         } else {
             $permissions->message = $request->input('message');
             $permissions->status = 'Pending';
-            $permissions->notify = 1;
+
             $permissions->save();
 
             return redirect('/group/'.str_replace(" ", "_", $group->name))->with('success', 'Request Sent');
@@ -151,11 +153,11 @@ class PermissionsController extends Controller
         } else if (auth()->user()->id !== $permission->group_creator_id) {
             return redirect('/notifications')->with('error', 'Unauthorized page');
         } else if ($permission->status != 'Pending') {
-            Log::error($permission);
             return redirect('/notifications')->with('error', 'You have already '.$permission->status.' this request.');
         }
 
-        $permission->notify = 1;
+        $permission->notify_user = $permission->user_id;
+        $permission->viewed = 0;
         $permission->status = $request->status;
 
         $permission->save();

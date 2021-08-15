@@ -27,16 +27,8 @@ class Permission extends Model
         ->from('permissions')
         ->join('groups', 'permissions.group_id', '=', 'groups.id')
         ->join('users', 'permissions.user_id', '=', 'users.id')
-        ->where(function($q) use ($user_id) {
-            $q->where('permissions.user_id', '=',  $user_id)
-                ->where('permissions.status', '!=', 'Pending')
-                ->where('permissions.notify', '=', 1);
-        })
-        ->orWhere(function($q) use ($user_id) {
-            $q->where('groups.creator_id', '=',  $user_id)
-                ->where('permissions.status', '=', 'Pending')
-                ->where('permissions.notify', '=', 1);
-        })
+        ->where('permissions.notify_user', '=', $user_id)
+        ->where('permissions.viewed', '=', 0)
         ->orderBy('updated_at', 'desc')
         ->get();
     }
@@ -48,15 +40,8 @@ class Permission extends Model
         ->from('permissions')
         ->join('groups', 'permissions.group_id', '=', 'groups.id')
         ->join('users', 'permissions.user_id', '=', 'users.id')
-        ->where(function($q) use ($user_id) {
-            $q->where('permissions.user_id', '=',  $user_id)
-                ->where('permissions.status', '!=', 'Pending')
-                ->where('permissions.notify', '!=', 1);})
-        ->orWhere(function($q) use ($user_id) {
-            $q->where('groups.creator_id', '=',  $user_id)
-                ->where('permissions.status', '=', 'Pending')
-                ->where('permissions.notify', '!=', 1);
-        })
+        ->where('permissions.notify_user', '=',  $user_id)
+        ->where('permissions.viewed', '=', 1)
         ->orderBy('updated_at', 'desc')
         ->get();
     }
@@ -90,20 +75,18 @@ class Permission extends Model
         ['creator_id'];
     }
 
-    // sets notified to 0 on all requests shown to the user with user_id
     static function notificationsViewed($user_id) {
         self::select('permissions.*')
         ->join('groups', 'group_id', '=', 'groups.id')
-        ->where(function($q) use ($user_id) {
-            $q->where('user_id', '=',  $user_id)
-                ->where('status', '!=', 'Pending')
-                ->where('notify', '=', 1);
-        })
-        ->orWhere(function($q) use ($user_id) {
-            $q->where('groups.creator_id', '=',  $user_id)
-                ->where('status', '=', 'Pending')
-                ->where('notify', '=', 1);
-        })
-        ->update(['notify' => 0, 'updated_at' => self::raw('permissions.updated_at')]);
+        ->where('notify_user', '=',  $user_id)
+        ->where('viewed', '=', 0)
+        ->update(['viewed' => 1, 'updated_at' => self::raw('permissions.updated_at')]);
     }
+
+    static function acceptPending($group) {
+        self::select('permissions.*')
+        ->where('permissions.group_id', '=', $group->id)
+        ->where('permissions.status', '=', 'Pending')
+        ->update(['viewed' => 0, 'notify_user' => $group->creator_id, 'status' => 'Accepted']);
+    } 
 }
