@@ -41,7 +41,8 @@ class SearchController extends Controller
             $groups = Group::allListed();
 
             $aspell = Aspell::create('C:\Program Files (x86)\Aspell\bin\aspell.exe');
-    
+            $searchWords = [];
+            
             // get each word from search query, set them to lowercase, split on " ", "-", "/", and remove and empty results
             foreach (array_filter(preg_split('/( |-|\/)/', strtolower($request->search)), 'strlen') as $word) {
                 $misspelling = $aspell->check($word, ['en_US'], ['from_example'])->current();
@@ -61,28 +62,28 @@ class SearchController extends Controller
                     foreach ($words as $word) {
                         if (str_contains(strtolower($group->name), Inflect::singularize($word)) || 
                             str_contains(strtolower($group->name), Inflect::pluralize($word))) {
-                            $group['score'] += (720 / $nameLength);
-                            continue;
+                            $group['score'] += (720 / max($nameLength - 1, 1));
+                            continue 2;
                         }
                     }
                 }
     
                 if ($request->platform == 'Any' || $group->platform == $request->platform) {
-                    $group['score'] += (240 / $nameLength);
+                    $group['score'] += 360;
                 }
     
                 if ($request->type == 'Any' || $group->type == $request->type) {
-                    $group['score'] += (240 / $nameLength);
+                    $group['score'] += 360;
                 }
     
                 if ($request->privacy == 'Any' || $group->privacy == $request->privacy) {
-                    $group['score'] += (240 / $nameLength);
+                    $group['score'] += 360;
                 }
 
-                $group['score'] += (min(240, $group->size * 2) / $nameLength);
+                $group['score'] += min(240, $group->size * 2);
 
                 $ageDays = round((time() - strtotime($group->created_at)) / (60 * 60 * 24));
-                $group['score'] -= (min(240, $ageDays / 4) / $nameLength);
+                $group['score'] -= min(240, $ageDays / 10);
 
             }
     
@@ -98,7 +99,7 @@ class SearchController extends Controller
     
                 foreach ($searchWords as $word) {
                     if (str_contains(strtolower($user->name), $word)) {
-                        $user['score'] += (1680 / count(preg_split('/( )/', $user->name)));
+                        $user['score'] += (1680 / max(count(preg_split('/( )/', $user->name) - 1, 1)));
                         continue;
                     }
                 }
@@ -120,7 +121,7 @@ class SearchController extends Controller
         return Validator::make(
             $data,
             $rules = [
-                'search' =>         ['required', 'max:128'],
+                'search' =>         ['max:128'],
                 'searchfor' =>      ['required', 'in:'.implode(',', $options['searchfor'])],
                 'platform' =>       ['required', 'in:Any,'.implode(',', $options['platform'])],
                 'type' =>           ['required', 'in:Any,'.implode(',', $options['type'])],
