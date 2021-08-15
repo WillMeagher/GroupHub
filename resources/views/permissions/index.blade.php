@@ -9,7 +9,7 @@
                     <li class="list-group-item">
                         <h3><a href="/permissions/{{str_replace(" ", "_", $request->id)}}"> <b>{{$request->user_name}}</b> wants to join <b>{{$request->group_name}}</b></a></h3>
                         <small><b>Message:</b> {{$request->message}}</small>
-                        <small><b>Created on:</b> {{$request->created_at}}</small>
+                        <small><b>Created on:</b> {{$request->created_at->format('M d, Y')}}</small>
                     </li>
                 @endforeach
             @else

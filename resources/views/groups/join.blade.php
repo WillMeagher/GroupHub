@@ -11,7 +11,7 @@
     <h4>privacy: {{$group->privacy}}</h4>
     <h2><b>Link: {{$group->link}}</b></h2>
     <hr>
-    <small>Created on {{$group->created_at}}</small>
+    <small>Created on {{$group->created_at->format('M d, Y')}}</small>
     <hr>
     <a href="/group/{{str_replace(" ", "_", $group->name)}}" class="btn btn-default">Go Back</a>
 @endsection

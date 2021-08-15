@@ -46,8 +46,8 @@ class SearchController extends Controller
             foreach (array_filter(preg_split('/( |-|\/)/', strtolower($request->search)), 'strlen') as $word) {
                 $misspelling = $aspell->check($word, ['en_US'], ['from_example'])->current();
                 if ($misspelling != Null) {
-                    // get first 9 suggestions plus initial element at max
-                    $searchWords[] = array_slice(array_merge(array($word), $misspelling->getSuggestions()), 0, 10);
+                    // get first 5 suggestions plus initial element at max
+                    $searchWords[] = array_slice(array_merge(array($word), $misspelling->getSuggestions()), 0, 5);
                 } else {
                     $searchWords[] = array($word);
                 }
@@ -55,28 +55,35 @@ class SearchController extends Controller
     
             foreach ($groups as $group) {
                 $group['score'] = 0;
+                $nameLength = count(preg_split('/( )/', $group->name));
     
                 foreach ($searchWords as $words) {
                     foreach ($words as $word) {
-                        if (in_array(Inflect::singularize($word), preg_split('/( |-|\/)/', strtolower($group->name))) || 
-                            in_array(Inflect::pluralize($word), preg_split('/( |-|\/)/', strtolower($group->name)))) {
-                            $group['score'] += (20 / count($searchWords));
+                        if (str_contains(strtolower($group->name), Inflect::singularize($word)) || 
+                            str_contains(strtolower($group->name), Inflect::pluralize($word))) {
+                            $group['score'] += (720 / $nameLength);
                             continue;
                         }
                     }
                 }
     
                 if ($request->platform == 'Any' || $group->platform == $request->platform) {
-                    $group['score'] += 5;
+                    $group['score'] += (240 / $nameLength);
                 }
     
                 if ($request->type == 'Any' || $group->type == $request->type) {
-                    $group['score'] += 5;
+                    $group['score'] += (240 / $nameLength);
                 }
     
                 if ($request->privacy == 'Any' || $group->privacy == $request->privacy) {
-                    $group['score'] += 3;
+                    $group['score'] += (240 / $nameLength);
                 }
+
+                $group['score'] += (min(240, $group->size * 2) / $nameLength);
+
+                $ageDays = round((time() - strtotime($group->created_at)) / (60 * 60 * 24));
+                $group['score'] -= (min(240, $ageDays / 4) / $nameLength);
+
             }
     
             return view('search.results')->with('results', $groups->sortByDesc('score'))->with('options', Options::groups($request))->with('request', $request);
@@ -90,8 +97,8 @@ class SearchController extends Controller
                 $user['score'] = 0;
     
                 foreach ($searchWords as $word) {
-                    if (in_array($word, preg_split('/( |-|\/)/', strtolower($user->name)))) {
-                        $user['score'] += 20;
+                    if (str_contains(strtolower($user->name), $word)) {
+                        $user['score'] += (1680 / count(preg_split('/( )/', $user->name)));
                         continue;
                     }
                 }

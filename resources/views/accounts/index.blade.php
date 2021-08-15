@@ -8,7 +8,7 @@
                 @foreach($users as $user)
                     <li class="list-group-item">
                         <h3><a href="/account/{{str_replace(" ", "_", $user->name)}}"> Name: {{$user->name}}</a></h3>
-                        <small>Account created on {{$user->created_at}}</small>
+                        <small>Account created on {{$user->created_at->format('M d, Y')}}</small>
                     </li>
                 @endforeach
             @else

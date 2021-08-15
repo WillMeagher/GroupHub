@@ -8,7 +8,7 @@
                 @foreach($groups as $group)
                     <li class="list-group-item">
                         <h3><a href="/group/{{str_replace(" ", "_", $group->name)}}"> Name: {{$group->name}} Creator: {{$group->creator_name}}</a></h3>
-                        <small>Created on {{$group->created_at}}</small>
+                        <small>Created on {{$group->created_at->format('M d, Y')}}</small>
                     </li>
                 @endforeach
             @else

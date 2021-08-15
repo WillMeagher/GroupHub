@@ -10,9 +10,8 @@
     <h4>type: {{$group->type}}</h4>
     <h4>privacy: {{$group->privacy}}</h4>
     <hr>
-    <small>Created on {{$group->created_at}}</small>
+    <small>Created on {{$group->created_at->format('M d, Y')}}</small>
     <hr>
-    <a href="/group" class="btn btn-default border-dark">Go Back</a>
     @if(!Auth::guest() && Auth::user()->id == $group->creator_id)
         <a href="/group/{{str_replace(" ", "_", $group->name)}}/edit" class="btn btn-default border-dark">Edit</a>
     @else

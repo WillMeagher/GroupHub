@@ -11,10 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 //use Illuminate\Support\Facades\Log;
 
-// TODO look into filtering out old groups
-// TODO add notification for user joining public group
-// TODO look into what happens to outstanding requests when groups are transitioned form private to public
-
 class GroupsController extends Controller
 {
     

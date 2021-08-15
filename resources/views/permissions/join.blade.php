@@ -6,7 +6,7 @@
     <h4>link: {{$group->link}}</h4>
 
     <hr>
-    <small>Created on {{$group->created_at}}</small>
+    <small>Created on {{$group->created_at->format('M d, Y')}}</small>
     <hr>
     <a href="/group/{{str_replace(" ", "_", $group->name)}}" class="btn btn-default border-dark">Go Back</a>
 @endsection

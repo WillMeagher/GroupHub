@@ -6,7 +6,7 @@
     <h4>Message: {{$request->message}}</h4>
 
     <hr>
-    <small>Created on {{$request->created_at}}</small>
+    <small>Created on {{$request->created_at->format('M d, Y')}}</small>
     <hr>
 
     {!! Form::open(['action' => ['App\Http\Controllers\PermissionsController@update', $request->id], 'method' => 'POST']) !!}
@@ -16,5 +16,5 @@
     {{Form::button('Deny', ['type' => 'submit', 'class' => 'btn btn-primary', 'name' => 'status', 'value' => 'Denied'])}}
     {!! Form::close() !!}
 
-    <a href="/permissions" class="btn btn-default border-dark">Go Back</a>
+    <a href="/group/{{str_replace(" ", "_", $request->group_name)}}" class="btn btn-default border-dark">Go Back</a>
 @endsection
