@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Validator;
 
 //use Illuminate\Support\Facades\Log;
 
+// TODO college specific groups
+// TODO turn on confirm email
+
 class GroupsController extends Controller
 {
     
@@ -87,13 +90,13 @@ class GroupsController extends Controller
      */
     public function store(Request $request)
     {
-        $this::validator(null, $request->all())->validate();
+        $this::storeValidator(null, $request->all())->validate();
 
         $group = new Group;
 
         $group->name        = $request->input('name');
         $group->link        = $request->input('link');
-        $group->platform    = $request->input('platform');
+        $group->platform    = self::getPlatform($request->input('link'));
         $group->type        = $request->input('type');
         $group->privacy     = $request->input('privacy');
         $group->description = $request->input('description') == null ? "" : $request->input('description');
@@ -179,11 +182,9 @@ class GroupsController extends Controller
             return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/created')->with('error', 'Unauthorized page');
         }
 
-        $this::validator($group->id, $request->all())->validate();
+        $this::updateValidator($group->id, $request->all())->validate();
 
         $group->name        = $request->input('name');
-        $group->link        = $request->input('link');
-        $group->platform    = $request->input('platform');
         $group->type        = $request->input('type');
         $group->privacy     = $request->input('privacy');
         $group->description = $request->input('description') == null ? "" : $request->input('description');
@@ -219,27 +220,67 @@ class GroupsController extends Controller
     }
 
     /**
-     * Get a validator for an incoming create request.
+     * Get a validator for an incoming store request.
      * @param int $group_id
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator($group_id, array $data)
+    protected function storeValidator($group_id, array $data)
     {
         $options = Options::groups();
         return Validator::make(
             $data,
             $rules = [
-                'name' =>           ['required', 'not_regex:/_/', Rule::unique('groups')->ignore($group_id)],
+                'name' =>           ['required', 'regex:/(^[A-Za-z0-9 ]+$)+/', Rule::unique('groups')->ignore($group_id)],
                 'link' =>           ['required', Rule::unique('groups')->ignore($group_id)],
-                'platform' =>       ['required', 'in:'.implode(',', $options['platform'])],
                 'type' =>           ['required', 'in:'.implode(',', $options['type'])],
                 'privacy' =>        ['required', 'in:'.implode(',', $options['privacy'])],
                 'description' =>    ['max:1024']
             ], 
             $messages = [
-                'not_regex' => 'Your group name cannot contain any underscores'
+                'regex' => 'Your group name can only contain letters, numbers, and spaces.'
             ]
         );
+    }
+
+    /**
+     * Get a validator for an incoming update request.
+     * @param int $group_id
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function updateValidator($group_id, array $data)
+    {
+        $options = Options::groups();
+        return Validator::make(
+            $data,
+            $rules = [
+                'name' =>           ['required', 'regex:/(^[A-Za-z0-9 ]+$)+/', Rule::unique('groups')->ignore($group_id)],
+                'type' =>           ['required', 'in:'.implode(',', $options['type'])],
+                'privacy' =>        ['required', 'in:'.implode(',', $options['privacy'])],
+                'description' =>    ['max:1024']
+            ], 
+            $messages = [
+                'regex' => 'Your group name can only contain letters, numbers, and spaces.'
+            ]
+        );
+    }
+
+    /**
+     * Get the corresponding platform to a link.
+     * @param string  $link
+     * @return string
+     */
+    protected function getPlatform($link) {
+        $platforms = Options::platformDomains();
+        $link = str_replace(["https://", "http://"], ["", ""], $link);
+
+        foreach($platforms as $domain => $platform) {
+            if (str_starts_with($link, $domain)) {
+                return $platform;
+            }
+        }
+
+        return "Other";
     }
 }

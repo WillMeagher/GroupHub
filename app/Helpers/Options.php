@@ -5,11 +5,13 @@ class Options
 {
 
     protected static $platformDropdowns = [
-        'Discord',
-        'Groupme',
-        'Instagram',
-        'Facebook',
-        'Other'
+        'discord.gg/'           => 'Discord',
+        'groupme.com/'          => 'Groupme',
+        'm.me/'                 => 'Messenger',
+        'chat.whatsapp.com/'    => 'WhatsApp',
+        'fb.me/'                => 'Facebook',
+        'www.snapchat.com/'     => 'Snapchat',
+        ''                      => 'Other'
     ];
 
     protected static $typeDropdowns = [
@@ -32,29 +34,6 @@ class Options
         'Groups',
         'Users'
     ];
-
-    /**
-     * Get dropdown options for groups
-     *
-     * @return array
-     */
-    public static function groups() 
-    {
-        foreach(Self::$platformDropdowns as $platform) {
-            $options['platform'][$platform] = $platform;
-        }
-        foreach(Self::$typeDropdowns as $type) {
-            $options['type'][$type] = $type;
-        }
-        foreach(Self::$privacyDropdowns as $privacy) {
-            $options['privacy'][$privacy] = $privacy;
-        }
-        foreach(Self::$searchForDropdowns as $searchFor) {
-            $options['searchfor'][$searchFor] = $searchFor;
-        }
-
-        return $options;
-    }
 
     protected static $genderDropdowns = [
         'Male',
@@ -84,6 +63,38 @@ class Options
         'Other'
     ];
 
+    /**
+     * Get dropdown options for groups
+     *
+     * @return array
+     */
+    public static function groups() 
+    {
+        foreach(Self::$platformDropdowns as $platform) {
+            $options['platform'][$platform] = $platform;
+        }
+        foreach(Self::$typeDropdowns as $type) {
+            $options['type'][$type] = $type;
+        }
+        foreach(Self::$privacyDropdowns as $privacy) {
+            $options['privacy'][$privacy] = $privacy;
+        }
+        foreach(Self::$searchForDropdowns as $searchFor) {
+            $options['searchfor'][$searchFor] = $searchFor;
+        }
+
+        return $options;
+    }
+
+    /**
+     * Get the domains for the different platforms
+     *
+     * @return array
+     */
+    public static function platformDomains() {
+        return Self::$platformDropdowns;
+    }
+
     public static function accounts() 
     {
         foreach(Self::$genderDropdowns as $gender) {
@@ -104,5 +115,4 @@ class Options
 
         return $options;
     }
-    
 }

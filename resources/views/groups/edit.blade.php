@@ -15,12 +15,12 @@
 
     <div class="form-group">
         {{Form::label('link', 'Link')}}
-        {{Form::text('link', $group->link, ['class' => 'form-control'])}}
+        <div class="form-control">{{$group->link}}</div>
     </div>
 
     <div class="form-group">
         {{Form::label('platform', 'Platform')}}
-        {{Form::select('platform', [$group->platform => $group->platform] + $options['platform'], null, ['defult' => $group->platform, 'class' => 'form-control'])}}
+        <div class="form-control">{{$group->platform}}</div>
     </div>
 
     <div class="form-group">

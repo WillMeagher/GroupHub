@@ -19,11 +19,6 @@
     </div>
 
     <div class="form-group">
-        {{Form::label('platform', 'Platform')}}
-        {{Form::select('platform', $options['platform'], null, ['placeholder' => 'Select the platform', 'class' => 'form-control'])}}
-    </div>
-
-    <div class="form-group">
         {{Form::label('type', 'Type')}}
         {{Form::select('type', $options['type'], null, ['placeholder' => 'Select the type of Group', 'class' => 'form-control'])}}
     </div>
