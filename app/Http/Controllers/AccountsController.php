@@ -124,6 +124,26 @@ class AccountsController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
+     *
+     * @param string $name
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($name)
+    {
+        $user = User::find($name);
+
+        if (empty($user)) {
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'User not found');
+        } else if (auth()->user()->name !== $name) {
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'Unauthorized request');
+        }
+
+        $user->delete();
+        return redirect('/login')->with('success', 'Account deleted');
+    }
+
+    /**
      * Get a validation rules for an incoming request.
      *
      * @param  array  $request

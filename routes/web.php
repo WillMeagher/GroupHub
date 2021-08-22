@@ -16,7 +16,7 @@ Auth::routes();
 
 
 Route::get('/home', 'App\Http\Controllers\AccountsController@show');
-Route::resource('/account', 'App\Http\Controllers\AccountsController', ['only' => ['index', 'create', 'store', 'show', 'edit', 'update']]);
+Route::resource('/account', 'App\Http\Controllers\AccountsController');
 
 Route::get('/account/{user}/created', 'App\Http\Controllers\GroupsController@created');
 Route::get('/account/{user}/joined', 'App\Http\Controllers\GroupsController@joined');
