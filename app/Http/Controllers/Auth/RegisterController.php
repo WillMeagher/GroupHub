@@ -52,12 +52,13 @@ class RegisterController extends Controller
         return Validator::make(
             $data,
             $rules = [
-                'name' => ['required', 'string', 'not_regex:/_/', 'max:255', 'unique:users'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'name' => ['required', 'string', 'regex:/^[ a-zA-Z0-9.-]*$/', 'max:255', 'unique:users'],
+                'email' => ['required', 'string', 'regex:/@terpmail.umd.edu/', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'string', 'min:8', 'confirmed']
             ], 
             $messages = [
-                'not_regex' => 'Your name cannot contain any underscores'
+                'name.regex'    => 'Your name can only contain letters, spaces, numbers, periods, and dashes.',
+                'email.regex'   => 'You must use a @terpmail.umd.edu email to register.',
             ]
         );
     }

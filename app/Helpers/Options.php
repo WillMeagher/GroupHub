@@ -4,7 +4,7 @@ namespace App\Helpers;
 class Options
 {
 
-    protected static $platformDropdowns = [
+    protected static $platforms = [
         'discord.gg/'           => 'Discord',
         'groupme.com/'          => 'Groupme',
         'm.me/'                 => 'Messenger',
@@ -64,13 +64,22 @@ class Options
     ];
 
     /**
+     * Get the domains for the different platforms
+     *
+     * @return array
+     */
+    public static function platformDomains() {
+        return Self::$platforms;
+    }
+
+    /**
      * Get dropdown options for groups
      *
      * @return array
      */
     public static function groups() 
     {
-        foreach(Self::$platformDropdowns as $platform) {
+        foreach(Self::$platforms as $platform) {
             $options['platform'][$platform] = $platform;
         }
         foreach(Self::$typeDropdowns as $type) {
@@ -87,14 +96,10 @@ class Options
     }
 
     /**
-     * Get the domains for the different platforms
+     * Get dropdown options for account create and search
      *
      * @return array
      */
-    public static function platformDomains() {
-        return Self::$platformDropdowns;
-    }
-
     public static function accounts() 
     {
         foreach(Self::$genderDropdowns as $gender) {
