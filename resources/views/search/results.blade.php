@@ -34,7 +34,10 @@
         {{Form::select('privacy', [$request->privacy => $request->privacy] + ['Any' => 'Any'] + $options['privacy'], null, ['class' => 'form-control'])}}
     </div>
 
-    {{Form::submit('Search', ['class' => 'btn btn-primary'])}}
+    <div class="text-center">
+        {{Form::submit('Search', ['class' => 'btn btn-primary'])}}
+    </div>
+
     {!! Form::close() !!}
 
     <div class="card mt-3">

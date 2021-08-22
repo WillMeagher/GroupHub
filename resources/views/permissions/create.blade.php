@@ -8,7 +8,7 @@
     <h1>Request to join {{$group->name}}</h1>
     
     {!! Form::open(['action' => 'App\Http\Controllers\PermissionsController@store', 'method' => 'POST']) !!}
-    
+
     <div class="form-group">
         <div class="d-flex">
             {{Form::label('message', 'Message')}}

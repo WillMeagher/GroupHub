@@ -46,7 +46,7 @@
         {{Form::submit('Update Group', ['class' => 'btn btn-primary'])}}
         {!! Form::close() !!}
     
-        {!!Form::open(['action'=>['App\Http\Controllers\GroupsController@destroy', $group->name], 'method' => 'POST', 'class' => 'pull-right'])!!}
+        {!!Form::open(['action'=>['App\Http\Controllers\GroupsController@destroy', $group->name], 'method' => 'POST', 'class' => 'ml-auto'])!!}
         {{Form::hidden('_method', 'DELETE')}}
         {{Form::submit('Delete', ['class' => 'btn btn-danger'])}}
         {!!Form::close()!!}

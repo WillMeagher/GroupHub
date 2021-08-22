@@ -10,10 +10,12 @@
     <hr>
 
     {!! Form::open(['action' => ['App\Http\Controllers\PermissionsController@update', $request->id], 'method' => 'POST']) !!}
+
     {{Form::hidden('_method', 'PUT')}}
     {{Form::hidden('name', $request->group_name)}}
     {{Form::button('Accept', ['type' => 'submit', 'class' => 'btn btn-primary', 'name' => 'status', 'value' => 'Accepted'])}}
     {{Form::button('Deny', ['type' => 'submit', 'class' => 'btn btn-primary', 'name' => 'status', 'value' => 'Denied'])}}
+    
     {!! Form::close() !!}
 
     <a href="/group/{{str_replace(" ", "_", $request->group_name)}}" class="btn btn-default border-dark">Go Back</a>

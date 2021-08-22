@@ -8,6 +8,7 @@
     <h1>Create Group</h1>
     
     {!! Form::open(['action' => 'App\Http\Controllers\GroupsController@store', 'method' => 'POST']) !!}
+
     <div class="form-group">
         {{Form::label('name', 'Group Name')}}
         {{Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'Group Name'])}}
@@ -20,7 +21,7 @@
 
     <div class="form-group">
         {{Form::label('type', 'Type')}}
-        {{Form::select('type', $options['type'], null, ['placeholder' => 'Select the type of Group', 'class' => 'form-control'])}}
+        {{Form::select('type', $options['type'], null, ['placeholder' => 'Select the Type', 'class' => 'form-control'])}}
     </div>
 
     <div class="form-group">
