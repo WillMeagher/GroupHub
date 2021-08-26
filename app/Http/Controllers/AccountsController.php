@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Helpers\Options;
+use Illuminate\Support\Facades\Validator;
 
 class AccountsController extends Controller
 {
@@ -50,10 +51,11 @@ class AccountsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, self::validationRules($request));
+        $this::storeValidator($request->all())->validate();
 
         $user = auth()->user();
 
+        $user->name = $request->input('name');
         $user->gender = $request->input('gender');
         $user->school = 'UMD';
         $user->major = $request->input('major');
@@ -109,7 +111,7 @@ class AccountsController extends Controller
      */
     public function update(Request $request)
     {
-        $this->validate($request, self::validationRules($request));
+        $this::updateValidator($request->all())->validate();
 
         $user = auth()->user();
 
@@ -143,19 +145,47 @@ class AccountsController extends Controller
     }
 
     /**
-     * Get a validation rules for an incoming request.
+     * Get a validator for an incoming request.
      *
-     * @param  array  $request
-     * @return array
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validationRules($request)
+    protected function storeValidator(array $data)
     {
         $options = Options::accounts();
 
-        return [
-            'gender' => ['required', 'in:'.implode(',', $options['gender'])],
-            'major' =>  ['required', 'in:'.implode(',', $options['major'])],
-            'year' =>   ['required', 'in:'.implode(',', $options['year'])],
-        ];
+        return Validator::make(
+            $data,
+            $rules = [
+                'name' => ['required', 'string', 'regex:/^[ a-zA-Z0-9.-]*$/', 'max:255', 'unique:users'],
+                'gender' => ['required', 'in:'.implode(',', $options['gender'])],
+                'major' =>  ['required', 'in:'.implode(',', $options['major'])],
+                'year' =>   ['required', 'in:'.implode(',', $options['year'])],
+            ], 
+            $messages = [
+                'name.regex'    => 'Your name can only contain letters, spaces, numbers, periods, and dashes.',
+            ]
+        );
+    }
+
+    /**
+     * Get a validator for an incoming request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function updateValidator(array $data)
+    {
+        $options = Options::accounts();
+
+        return Validator::make(
+            $data,
+            $rules = [
+                'gender' => ['required', 'in:'.implode(',', $options['gender'])],
+                'major' =>  ['required', 'in:'.implode(',', $options['major'])],
+                'year' =>   ['required', 'in:'.implode(',', $options['year'])],
+            ], 
+            $messages = []
+        );
     }
 }

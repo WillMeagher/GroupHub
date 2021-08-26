@@ -8,6 +8,11 @@
             {!! Form::open(['action' => ['App\Http\Controllers\AccountsController@update', $user->name], 'method' => 'POST']) !!}
             
             <div class="form-group">
+                {{Form::label('name', 'Name')}}
+                <div class="form-control">{{$user->name}}</div>
+            </div>
+
+            <div class="form-group">
                 {{Form::label('gender', 'Gender')}}
                 {{Form::select('gender', [$user->gender => $user->gender] + $options['gender'], null, ['class' => 'form-control'])}}
             </div>

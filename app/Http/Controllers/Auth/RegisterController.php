@@ -52,12 +52,10 @@ class RegisterController extends Controller
         return Validator::make(
             $data,
             $rules = [
-                'name' => ['required', 'string', 'regex:/^[ a-zA-Z0-9.-]*$/', 'max:255', 'unique:users'],
                 'email' => ['required', 'string', 'regex:/@terpmail.umd.edu/', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'string', 'min:8', 'confirmed']
             ], 
             $messages = [
-                'name.regex'    => 'Your name can only contain letters, spaces, numbers, periods, and dashes.',
                 'email.regex'   => 'You must use a @terpmail.umd.edu email to register.',
             ]
         );
@@ -72,7 +70,7 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
+            'name' => null,
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
