@@ -13,11 +13,6 @@
             </div>
 
             <div class="form-group">
-                {{Form::label('school', 'School')}}
-                {{Form::select('school', $options['school'], null, ['placeholder' => 'Select your School', 'class' => 'form-control'])}}
-            </div>
-
-            <div class="form-group">
                 {{Form::label('major', 'Major')}}
                 {{Form::select('major', $options['major'], null, ['placeholder' => 'Select your Major', 'class' => 'form-control'])}}
             </div>

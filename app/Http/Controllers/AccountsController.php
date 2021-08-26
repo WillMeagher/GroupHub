@@ -16,7 +16,7 @@ class AccountsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('verified');
         $this->middleware('accountCreated', ['except' => ['create', 'store']]);
     }
 
@@ -55,7 +55,7 @@ class AccountsController extends Controller
         $user = auth()->user();
 
         $user->gender = $request->input('gender');
-        $user->school = $request->input('school');
+        $user->school = 'UMD';
         $user->major = $request->input('major');
         $user->year = $request->input('year');
         $user->account_created = 1;
@@ -114,7 +114,6 @@ class AccountsController extends Controller
         $user = auth()->user();
 
         $user->gender = $request->input('gender');
-        $user->school = $request->input('school');
         $user->major = $request->input('major');
         $user->year = $request->input('year');
 
@@ -155,7 +154,6 @@ class AccountsController extends Controller
 
         return [
             'gender' => ['required', 'in:'.implode(',', $options['gender'])],
-            'school' => ['required', 'in:'.implode(',', $options['school'])],
             'major' =>  ['required', 'in:'.implode(',', $options['major'])],
             'year' =>   ['required', 'in:'.implode(',', $options['year'])],
         ];

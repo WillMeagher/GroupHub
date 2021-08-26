@@ -12,8 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Auth::routes();
-
+Auth::routes(['verify' => true]);
 
 Route::get('/home', 'App\Http\Controllers\AccountsController@show');
 Route::resource('/account', 'App\Http\Controllers\AccountsController');

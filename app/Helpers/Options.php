@@ -14,6 +14,10 @@ class Options
         ''                      => 'Other'
     ];
 
+    protected static $schools = [
+        '@terpmail.umd.edu'  =>  'UMD'
+    ];
+
     protected static $typeDropdowns = [
         'Class',
         'Sports',
@@ -39,12 +43,6 @@ class Options
         'Male',
         'Female',
         'Non-Binary'
-    ];
-
-    protected static $schoolDropdowns = [
-        'UMD',
-        'GC',
-        'AMU'
     ];
 
     protected static $majorDropdowns = [
@@ -104,10 +102,6 @@ class Options
     {
         foreach(Self::$genderDropdowns as $gender) {
             $options['gender'][$gender] = $gender;
-        }
-
-        foreach(Self::$schoolDropdowns as $school) {
-            $options['school'][$school] = $school;
         }
 
         foreach(Self::$majorDropdowns as $major) {
