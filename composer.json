@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
         "laravelcollective/html": "^6.2",
+        "subfission/cas": "^4.1",
         "tigitz/php-spellchecker": "^0.3.0"
     },
     "require-dev": {
