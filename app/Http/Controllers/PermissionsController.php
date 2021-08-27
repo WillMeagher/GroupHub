@@ -55,7 +55,7 @@ class PermissionsController extends Controller
         } else if (Permission::isMember(auth()->user()->id, $group->id)) {
             return redirect('/group/'.str_replace(" ", "_", $name).'/join');
         } else if (Permission::exists(auth()->user()->id, $group->id)) {
-            return redirect('/group/'.str_replace(" ", "_", $name))->with('error', 'You already have an entry in our database for this group');
+            return redirect('/group/'.str_replace(" ", "_", $name).'/view')->with('error', 'You already have an entry in our database for this group');
         } else if ($group->privacy == 'Public') {
             $request = new \Illuminate\Http\Request;
             $request->setMethod('POST');
@@ -82,9 +82,9 @@ class PermissionsController extends Controller
         $group = Group::find($request->input('name'));
 
         if (empty($group) || $group->privacy == 'Delisted') {
-            return redirect('/group')->with('error', 'Group not found');
+            return redirect('/search')->with('error', 'Group not found');
         } else if (Permission::exists(auth()->user()->id, $group->id)) {
-            return redirect('/group/'.str_replace(" ", "_", $group->name))->with('error', 'You already have already requested to join this group');
+            return redirect('/group/'.str_replace(" ", "_", $group->name).'/view')->with('error', 'You already have already requested to join this group');
         }
 
         $permissions = new Permission;
@@ -109,7 +109,7 @@ class PermissionsController extends Controller
 
             $permissions->save();
 
-            return redirect('/group/'.str_replace(" ", "_", $group->name))->with('success', 'Request Sent');
+            return redirect('/group/'.str_replace(" ", "_", $group->name).'/view')->with('success', 'Request Sent');
         }
     }
 

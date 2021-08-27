@@ -22,24 +22,16 @@ class AccountsController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $users = User::all();
-        
-        return view('accounts.index')->with('users', $users);
-    }
-
-    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
+        if (auth()->user()->account_created == 1) {
+            return redirect('/home')->with('error', 'You have already created your account.');
+        }
+
         return view('accounts.create')->with('options', Options::accounts());
     }
 
@@ -51,6 +43,10 @@ class AccountsController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->account_created == 1) {
+            return redirect('/home')->with('error', 'You have already created your account.');
+        }
+
         $this::storeValidator($request->all())->validate();
 
         $user = auth()->user();
@@ -64,11 +60,12 @@ class AccountsController extends Controller
 
         $user->save();
 
-        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('success', 'Account created');
+        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/view')->with('success', 'Account created');
     }
 
     /**
      * Display the specified resource.
+     * Null is there for the home route
      *
      * @param string $name
      * @return \Illuminate\Http\Response
@@ -78,7 +75,7 @@ class AccountsController extends Controller
         $user = User::find($name == null ? auth()->user()->name : $name);
 
         if (empty($user)) {
-            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'User not found');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/view')->with('error', 'User not found');
         }
 
         return view('accounts.view')->with('user', $user);
@@ -95,9 +92,9 @@ class AccountsController extends Controller
         $user = User::find($name);
 
         if (empty($user)) {
-            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'User not found');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/view')->with('error', 'User not found');
         } else if (auth()->user()->id !== $user->id) {
-            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'Unauthorized page');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/view')->with('error', 'Unauthorized page');
         }
 
         return view('accounts.edit')->with('user', $user)->with('options', Options::accounts());
@@ -121,7 +118,7 @@ class AccountsController extends Controller
 
         $user->save();
 
-        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('success', 'Account updated');
+        return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/view')->with('success', 'Account updated');
     }
 
     /**
@@ -135,9 +132,9 @@ class AccountsController extends Controller
         $user = User::find($name);
 
         if (empty($user)) {
-            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'User not found');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/view')->with('error', 'User not found');
         } else if (auth()->user()->name !== $name) {
-            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name))->with('error', 'Unauthorized request');
+            return redirect('/account/'.str_replace(" ", "_", auth()->user()->name).'/view')->with('error', 'Unauthorized request');
         }
 
         $user->delete();

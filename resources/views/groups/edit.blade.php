@@ -52,5 +52,5 @@
         {!!Form::close()!!}
     </div>
 
-    <a href="/group/{{str_replace(" ", "_", $group->name)}}" class="btn btn-default border-dark mt-2">Go Back</a>
+    <a href="/group/{{str_replace(" ", "_", $group->name)}}/view" class="btn btn-default border-dark mt-2">Go Back</a>
 @endsection

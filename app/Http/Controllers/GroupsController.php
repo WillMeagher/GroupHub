@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Group;
 use App\Models\Permission;
+use App\Models\User;
 use App\Helpers\Options;
 use Illuminate\Support\Facades\Validator;
 
@@ -24,20 +25,8 @@ class GroupsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['index', 'show', 'search', 'results']]);
-        $this->middleware('accountCreated', ['except' => ['index', 'show', 'search', 'results']]);
-    }
-
-    /**
-     * Display a listing of the listed groups.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $groups = Group::allListed();
-
-        return view('groups.index')->with('groups', $groups);
+        $this->middleware('auth', ['except' => ['show', 'search', 'results']]);
+        $this->middleware('accountCreated', ['except' => ['show', 'search', 'results']]);
     }
 
     /**
@@ -47,16 +36,14 @@ class GroupsController extends Controller
      */
     public function created($username)
     {
-        $groups = auth()->user()->name == $username ? Group::allCreated($username) : Group::listedCreated($username);
-
-        if (empty($groups)) {
+        if (empty(User::find($username))) {
             return redirect('/search')->with('error', 'User not found');
         }
 
-        if (auth()->user()->name == $username) {
-            return view('groups.index')->with('groups', $groups)->with('title', 'Your Created Groups');
+        if (auth()->user()->name == str_replace("_", " ", $username)) {
+            return view('groups.index')->with('groups', Group::allCreated($username))->with('title', 'Your Created Groups');
         } else {
-            return view('groups.index')->with('groups', $groups)->with('title', $username."'s Created Groups");
+            return view('groups.index')->with('groups', Group::listedCreated($username))->with('title', str_replace("_", " ", $username)."'s Created Groups");
         }
     }
 
@@ -67,9 +54,17 @@ class GroupsController extends Controller
      */
     public function joined($username)
     {
+        if (empty(User::find($username))) {
+            return redirect('/search')->with('error', 'User not found');
+        }
+
         $groups = Group::joined($username);
 
-        return view('groups.index')->with('groups', $groups)->with('title', 'Your Joined Groups');
+        if (auth()->user()->name == str_replace("_", " ", $username)) {
+            return view('groups.index')->with('groups', $groups)->with('title', 'Your Joined Groups');
+        } else {
+            return view('groups.index')->with('groups', $groups)->with('title', str_replace("_", " ", $username)."'s Joined Groups");
+        }
     }
 
     /**

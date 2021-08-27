@@ -52,7 +52,7 @@
                                 <a class="nav-link" href="/notifications">Notifications</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}">Account</a>
+                                <a class="nav-link" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/view">Account</a>
                             </li>
                         @endauth
                     </ul>
