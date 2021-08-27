@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Auth::routes(['verify' => true]);
+Route::get('/cas/login', 'App\Http\Controllers\CasController@login');
 
 Route::get('/home', 'App\Http\Controllers\AccountsController@show');
 Route::resource('/account', 'App\Http\Controllers\AccountsController');

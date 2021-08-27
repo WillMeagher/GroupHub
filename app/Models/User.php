@@ -18,6 +18,13 @@ class User extends Authenticatable implements MustVerifyEmail
         ->where('users.name', '=', str_replace("_", " ", $name))
         ->first();
     }
+
+    static function findByEmail($email) {
+        return self::select('users.*')
+        ->from('users')
+        ->where('users.email', '=', $email)
+        ->first();
+    }
     
     /**
      * The attributes that are mass assignable.

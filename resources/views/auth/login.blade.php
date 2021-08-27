@@ -62,6 +62,9 @@
                     </div>
                 </div>
             </form>
+            <div class="d-flex mt-3">
+                <a href="/cas/login" class="btn btn-success ml-auto mr-auto">Login with UMD Cas</a>
+            </div>
         </div>
     </div>
 @endsection
