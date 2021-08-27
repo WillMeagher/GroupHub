@@ -99,7 +99,7 @@ class SearchController extends Controller
     
                 foreach ($searchWords as $word) {
                     if (str_contains(strtolower($user->name), $word)) {
-                        $user['score'] += (1680 / max(count(preg_split('/( )/', $user->name) - 1, 1)));
+                        $user['score'] += (1680 / max(count(preg_split('/( )/', $user->name)) - 1, 1));
                         continue;
                     }
                 }
