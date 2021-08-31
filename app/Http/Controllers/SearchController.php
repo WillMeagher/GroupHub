@@ -57,12 +57,12 @@ class SearchController extends Controller
             foreach ($groups as $group) {
                 $group['score'] = 0;
                 $nameLength = count(preg_split('/( )/', $group->name));
-    
+                $group_name = strtolower($group->name);
                 foreach ($searchWords as $words) {
                     foreach ($words as $word) {
-                        if (str_contains(strtolower($group->name), Inflect::singularize($word)) || 
-                            str_contains(strtolower($group->name), Inflect::pluralize($word))) {
-                            $group['score'] += (720 / max($nameLength - 1, 1));
+                        if (str_contains($group_name, Inflect::singularize($word)) || 
+                            str_contains($group_name, Inflect::pluralize($word))) {
+                            $group['score'] += (720 / ($nameLength + 1));
                             continue 2;
                         }
                     }
@@ -99,7 +99,7 @@ class SearchController extends Controller
     
                 foreach ($searchWords as $word) {
                     if (str_contains(strtolower($user->name), $word)) {
-                        $user['score'] += (1680 / max(count(preg_split('/( )/', $user->name)) - 1, 1));
+                        $user['score'] += (1680 / (count(preg_split('/( )/', $user->name)) + 1));
                         continue;
                     }
                 }

@@ -4,7 +4,7 @@
     <h1>Notifications</h1>
 
     @if(count($newNotifications) > 0)
-        <h2>&emsp;New Notifications</h2>
+        <h2 class="mt-2">&emsp;New Notifications</h2>
         <div class="card mt-3">
             <ul class="list-group list-group-flush">
             @foreach($newNotifications as $notification)
@@ -25,7 +25,7 @@
     @endif
 
     @if(count($oldNotifications) > 0)
-        <h2>&emsp;Old Notifications</h2>
+        <h2 class="mt-2">&emsp;Old Notifications</h2>
         <div class="card mt-3">
             <ul class="list-group list-group-flush">
             @foreach($oldNotifications as $notification)
