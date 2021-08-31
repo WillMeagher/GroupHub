@@ -12,8 +12,19 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Auth::routes(['verify' => true]);
+Route::pattern('user', '^[a-zA-Z0-9.-_]*$');
+Route::pattern('group', '^[a-zA-Z0-9.-_]*$');
+
+Auth::routes([
+    'login' => false,
+    'register' => false, // Registration Routes...
+    'reset' => false, // Password Reset Routes...
+    'verify' => false, // Email Verification Routes...
+  ]);
+
 Route::get('/cas/login', 'App\Http\Controllers\CasController@login');
+Route::get('/login', 'App\Http\Controllers\CasController@login');
+Route::get('/register', 'App\Http\Controllers\CasController@login');
 
 // these should remain above the resource to prevent issues with account names
 Route::get('/home', 'App\Http\Controllers\AccountsController@show');

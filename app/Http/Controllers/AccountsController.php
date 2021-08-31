@@ -17,7 +17,8 @@ class AccountsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('verified');
+        $this->middleware('auth');
+        // $this->middleware('verified');
         $this->middleware('accountCreated', ['except' => ['create', 'store']]);
     }
 
@@ -138,7 +139,7 @@ class AccountsController extends Controller
         }
 
         $user->delete();
-        return redirect('/login')->with('success', 'Account deleted');
+        return redirect('/')->with('success', 'Account deleted');
     }
 
     /**
