@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Helpers\Options;
 use App\Models\Group;
 use App\Models\User;
-use PhpSpellcheck\SpellChecker\Aspell;
 use App\Helpers\Inflect;
 use \Validator;
 
@@ -39,32 +38,18 @@ class SearchController extends Controller
         if ($request->searchfor == "Groups") {
 
             $groups = Group::allListed();
-
-            $aspell = Aspell::create('C:\Program Files (x86)\Aspell\bin\aspell.exe');
             $searchWords = [];
-            
-            // get each word from search query, set them to lowercase, split on " ", "-", "/", and remove and empty results
-            foreach (array_filter(preg_split('/( |-|\/)/', strtolower($request->search)), 'strlen') as $word) {
-                $misspelling = $aspell->check($word, ['en_US'], ['from_example'])->current();
-                if ($misspelling != Null) {
-                    // get first 5 suggestions plus initial element at max
-                    $searchWords[] = array_slice(array_merge(array($word), $misspelling->getSuggestions()), 0, 5);
-                } else {
-                    $searchWords[] = array($word);
-                }
-            }
     
             foreach ($groups as $group) {
                 $group['score'] = 0;
                 $nameLength = count(preg_split('/( )/', $group->name));
                 $group_name = strtolower($group->name);
-                foreach ($searchWords as $words) {
-                    foreach ($words as $word) {
-                        if (str_contains($group_name, Inflect::singularize($word)) || 
-                            str_contains($group_name, Inflect::pluralize($word))) {
-                            $group['score'] += (720 / ($nameLength + 1));
-                            continue 2;
-                        }
+
+                foreach (array_filter(preg_split('/( |-|\/)/', strtolower($request->search)), 'strlen') as $word) {
+                    if (str_contains($group_name, Inflect::singularize($word)) || 
+                        str_contains($group_name, Inflect::pluralize($word))) {
+                        $group['score'] += (720 / ($nameLength + 1));
+                        continue;
                     }
                 }
     
