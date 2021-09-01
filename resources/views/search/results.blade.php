@@ -29,4 +29,32 @@
             @endif
        </ul>
     </div>
+
+    <div class="text-center mt-2 d-flex w-100">
+        @if ($request->page != 0)
+        {!! Form::open(['action' => 'App\Http\Controllers\SearchController@results', 'method' => 'POST']) !!}
+        {{Form::hidden('search', $request->search)}}
+        {{Form::hidden('searchfor', $request->searchfor)}}
+        {{Form::hidden('platform', $request->platform)}}
+        {{Form::hidden('type', $request->type)}}
+        {{Form::hidden('privacy', $request->privacy)}}
+        {{Form::hidden('page', $request->page - 1)}}
+        {{Form::submit('Last Page', ['class' => 'btn btn-primary m-2'])}}
+        {!! Form::close() !!}   
+        @endif
+
+        @if (count($results) == 10)
+        {!! Form::open(['action' => 'App\Http\Controllers\SearchController@results', 'method' => 'POST', 'class'=>'ml-auto']) !!}
+        {{Form::hidden('search', $request->search)}}
+        {{Form::hidden('searchfor', $request->searchfor)}}
+        {{Form::hidden('platform', $request->platform)}}
+        {{Form::hidden('type', $request->type)}}
+        {{Form::hidden('privacy', $request->privacy)}}
+        {{Form::hidden('page', $request->page + 1)}}
+        {{Form::submit('Next Page', ['class' => 'btn btn-primary m-2'])}}
+        {!! Form::close() !!}   
+        @endif
+
+    </div>
+    
 @endsection

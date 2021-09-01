@@ -40,7 +40,7 @@ class SearchController extends Controller
             $groups = Group::allListed();
             $searchWords = [];
     
-            foreach ($groups as $group) {
+            foreach ($groups as $key => $group) {
                 $group['score'] = 0;
                 $nameLength = count(preg_split('/( )/', $group->name));
                 $group_name = strtolower($group->name);
@@ -51,6 +51,11 @@ class SearchController extends Controller
                         $group['score'] += (720 / ($nameLength + 1));
                         continue;
                     }
+                }
+
+                if ($group['score'] == 0 && $request->search != "") {
+                    unset($groups[$key]);
+                    continue;
                 }
     
                 if ($request->platform == 'Any' || $group->platform == $request->platform) {
@@ -69,19 +74,16 @@ class SearchController extends Controller
 
                 $ageDays = round((time() - strtotime($group->created_at)) / (60 * 60 * 24));
                 $group['score'] -= min(240, $ageDays / 10);
-
             }
-    
-            return view('search.results')->with('results', $groups->sortByDesc('score'))->with('options', Options::groups($request))->with('request', $request);
+
+            $results = $groups->sortByDesc('score')->slice($request->page * 10, 10);
         } else {
-            
-            $users = User::all();
+            $users = User::allCreated();
 
             $searchWords = array_filter(preg_split('/( |-|\/)/', strtolower($request->search)), 'strlen');
     
             foreach ($users as $user) {
                 $user['score'] = 0;
-    
                 foreach ($searchWords as $word) {
                     if (str_contains(strtolower($user->name), $word)) {
                         $user['score'] += (1680 / (count(preg_split('/( )/', $user->name)) + 1));
@@ -90,8 +92,10 @@ class SearchController extends Controller
                 }
             }
     
-            return view('search.results')->with('results', $users->sortByDesc('score'))->with('options', Options::groups($request))->with('request', $request);
+            $results = $users->sortByDesc('score')->slice($request->page * 10, 10);
         }
+
+        return view('search.results')->with('results', $results)->with('request', $request);
     }
 
     /**
@@ -110,7 +114,8 @@ class SearchController extends Controller
                 'searchfor' =>      ['required', 'in:'.implode(',', $options['searchfor'])],
                 'platform' =>       ['required', 'in:Any,'.implode(',', $options['platform'])],
                 'type' =>           ['required', 'in:Any,'.implode(',', $options['type'])],
-                'privacy' =>        ['required', 'in:Any,'.implode(',', $options['privacy'])]
+                'privacy' =>        ['required', 'in:Any,'.implode(',', $options['privacy'])],
+                'page' =>           ['required', 'integer', 'min:0']
             ], 
             $messages = []
         );
