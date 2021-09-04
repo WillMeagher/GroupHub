@@ -26,7 +26,8 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
+                <a class="navbar-brand align-middle d-flex" href="{{ url('/') }}">
+                    <img src="{{url('/images/GroupHubLogo.svg')}}" style="height: 26px;" class="w-auto mr-1" alt="Group Hub Logo"/>
                     {{ config('app.name', 'Group Hub') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
