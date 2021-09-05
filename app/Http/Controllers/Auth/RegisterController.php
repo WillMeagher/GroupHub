@@ -52,11 +52,11 @@ class RegisterController extends Controller
         return Validator::make(
             $data,
             $rules = [
-                'email' => ['required', 'string', 'regex:/@terpmail.umd.edu/', 'email', 'max:255', 'unique:users'],
+                'email' => ['required', 'string', 'regex:/@umd.edu/', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'string', 'min:8', 'confirmed']
             ], 
             $messages = [
-                'email.regex'   => 'You must use a @terpmail.umd.edu email to register.',
+                'email.regex'   => 'You must use a @umd.edu email to register.',
             ]
         );
     }

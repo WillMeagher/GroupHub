@@ -21,7 +21,7 @@ class CasController extends Controller
 
     public function login()
     {
-        $user_email = cas()->user().'@terpmail.umd.edu';
+        $user_email = cas()->user().'@umd.edu';
         $user = User::findByEmail($user_email);
 
         if (empty($user)) {

@@ -15,7 +15,7 @@ class Options
     ];
 
     protected static $schools = [
-        '@terpmail.umd.edu'  =>  'UMD'
+        '@umd.edu'  =>  'UMD'
     ];
 
     protected static $typeDropdowns = [
