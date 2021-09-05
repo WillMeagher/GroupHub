@@ -79,7 +79,7 @@
                                     <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/joined">Joined Groups</a>
                                     <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/created">Created Groups</a>
                                     <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/edit">Edit Account</a>
-
+                                    <a class="dropdown-item" href="/contact">Contact Us</a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

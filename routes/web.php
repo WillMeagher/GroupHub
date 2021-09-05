@@ -46,6 +46,9 @@ Route::get('/notifications', 'App\Http\Controllers\PermissionsController@index')
 Route::get('/permissions/{group}/create', 'App\Http\Controllers\PermissionsController@create');
 Route::resource('/permissions', 'App\Http\Controllers\PermissionsController', ['only' => ['store', 'show', 'update']]);
 
+Route::get('/contact', 'App\Http\Controllers\ContactController@create');
+Route::match('POST', '/contact/create', 'App\Http\Controllers\ContactController@store');
+
 Route::fallback(function () {
     return abort(404);
 });
