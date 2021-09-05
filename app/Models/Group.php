@@ -10,7 +10,6 @@ class Group extends Model
     use HasFactory;
     
     static function find($name) {
-    
         return self::select('groups.*', 'users.name AS creator_name')
         ->from('groups')
         ->join('users', 'users.id', '=', 'groups.creator_id')
