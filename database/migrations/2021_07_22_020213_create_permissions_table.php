@@ -14,7 +14,6 @@ class CreatePermissionsTable extends Migration
     public function up()
     {
         Schema::create('permissions', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('group_id')->unsigned();
