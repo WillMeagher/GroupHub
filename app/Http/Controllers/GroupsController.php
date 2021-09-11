@@ -90,7 +90,7 @@ class GroupsController extends Controller
         $group = new Group;
 
         $group->name        = $request->input('name');
-        $group->link        = $request->input('link');
+        $group->link        = (str_starts_with($request->input('link'), "https://") || str_starts_with($request->input('link'), "http://")) ? $request->input('link') : "https://".$request->input('link');
         $group->platform    = self::getPlatform($request->input('link'));
         $group->type        = $request->input('type');
         $group->privacy     = $request->input('privacy');
