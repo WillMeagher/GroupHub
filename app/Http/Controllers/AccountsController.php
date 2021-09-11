@@ -155,13 +155,13 @@ class AccountsController extends Controller
         return Validator::make(
             $data,
             $rules = [
-                'name' => ['required', 'string', 'regex:/^[ a-zA-Z0-9-]*$/', 'max:255', 'unique:users'],
+                'name' => ['required', 'string', 'regex:/^[ a-zA-Z0-9-]*[a-zA-Z][ a-zA-Z0-9-]*$/', 'max:255', 'unique:users'],
                 'gender' => ['required', 'in:'.implode(',', $options['gender'])],
                 'major' =>  ['required', 'in:'.implode(',', $options['major'])],
                 'year' =>   ['required', 'in:'.implode(',', $options['year'])],
             ], 
             $messages = [
-                'name.regex'    => 'Your name can only contain letters, spaces, numbers, and dashes.',
+                'name.regex'    => 'Your name can only contain letters, spaces, numbers, and dashes. It also must contain at least one letter.',
             ]
         );
     }

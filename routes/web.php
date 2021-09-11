@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::pattern('user', '^[a-zA-Z0-9.-_]*$');
-Route::pattern('group', '^[a-zA-Z0-9.-_]*$');
 
 Auth::routes([
     'login' => false,

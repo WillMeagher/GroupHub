@@ -226,14 +226,14 @@ class GroupsController extends Controller
         return Validator::make(
             $data,
             $rules = [
-                'name' =>           ['required', 'regex:/(^[A-Za-z0-9 ]+$)+/', Rule::unique('groups')->ignore($group_id)],
+                'name' =>           ['required', 'regex:/^[A-Za-z0-9 ]*[A-Za-z]+[A-Za-z0-9 ]*$/', Rule::unique('groups')->ignore($group_id)],
                 'link' =>           ['required', Rule::unique('groups')->ignore($group_id)],
                 'type' =>           ['required', 'in:'.implode(',', $options['type'])],
                 'privacy' =>        ['required', 'in:'.implode(',', $options['privacy'])],
                 'description' =>    ['max:1024']
             ], 
             $messages = [
-                'regex' => 'Your group name can only contain letters, numbers, and spaces.'
+                'regex' => 'Your group name can only contain letters, numbers, and spaces.  It also must contain at least one letter.'
             ]
         );
     }
@@ -250,13 +250,13 @@ class GroupsController extends Controller
         return Validator::make(
             $data,
             $rules = [
-                'name' =>           ['required', 'regex:/(^[A-Za-z0-9 ]+$)+/', Rule::unique('groups')->ignore($group_id)],
+                'name' =>           ['required', 'regex:/^[A-Za-z0-9 ]*[A-Za-z]+[A-Za-z0-9 ]*$/', Rule::unique('groups')->ignore($group_id)],
                 'type' =>           ['required', 'in:'.implode(',', $options['type'])],
                 'privacy' =>        ['required', 'in:'.implode(',', $options['privacy'])],
                 'description' =>    ['max:1024']
             ], 
             $messages = [
-                'regex' => 'Your group name can only contain letters, numbers, and spaces.'
+                'regex' => 'Your group name can only contain letters, numbers, and spaces. It also must contain at least one letter.'
             ]
         );
     }
