@@ -42,7 +42,7 @@
 
                     <!-- Center Of Navbar -->
                     <ul class="navbar-nav m-auto">
-                        @auth
+                        @if (!Auth::guest() && Auth::user()->account_created)
                             <li class="nav-item">
                                 <a class="nav-link" href="/group/create">Create</a>
                             </li>
@@ -55,7 +55,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/view">Account</a>
                             </li>
-                        @endauth
+                        @endif
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -70,27 +70,29 @@
                                 <a class="nav-link" href="/register">{{ __('Register') }}</a>
                             </li>
                         @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/joined">Joined Groups</a>
-                                    <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/created">Created Groups</a>
-                                    <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/edit">Edit Account</a>
-                                    <a class="dropdown-item" href="/contact">Contact Us</a>
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                            @if (Auth::user()->account_created)
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        {{ Auth::user()->name }}
                                     </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/joined">Joined Groups</a>
+                                        <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/created">Created Groups</a>
+                                        <a class="dropdown-item" href="/account/{{str_replace(" ", "_", Auth::user()->name)}}/edit">Edit Account</a>
+                                        <a class="dropdown-item" href="/contact">Contact Us</a>
+                                        <a class="dropdown-item" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault();
+                                                        document.getElementById('logout-form').submit();">
+                                            {{ __('Logout') }}
+                                        </a>
+
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                            @csrf
+                                        </form>
+                                    </div>
+                                </li>
+                            @endif
                         @endguest
                     </ul>
                 </div>
