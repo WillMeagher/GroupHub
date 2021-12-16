@@ -11,9 +11,9 @@
     <h4>Platform: {{$group->platform}}</h4>
     <h4>Size: {{$group->size}}</h4>
     <h4>Privacy: {{$group->privacy}}</h4>
-    <h2>Link: <a href="{{$group->link}}">{{$group->link}}</a></h2>
+    <h2>Link: {{$group->link}}</h2>
     <hr>
-    <small>Created on {{$group->created_at->format('M d, Y')}}</small>
+    <h4>Created on {{$group->created_at->format('M d, Y')}}</h4>
     <hr>
-    <a href="/group/{{str_replace(" ", "_", $group->name)}}/view" class="btn btn-default">Go Back</a>
+    <a href="/group/{{str_replace(" ", "_", $group->name)}}/view" class="btn btn-default border-dark">Go Back</a>
 @endsection
