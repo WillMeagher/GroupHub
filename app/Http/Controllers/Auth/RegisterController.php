@@ -52,7 +52,8 @@ class RegisterController extends Controller
         return Validator::make(
             $data,
             $rules = [
-                'email' => ['required', 'string', 'regex:/@umd.edu/', 'email', 'max:255', 'unique:users'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                // REMOVE COMMENT FOR JUST UMD LOGIN 'email' => ['required', 'string', 'regex:/@umd.edu/', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'string', 'min:8', 'confirmed']
             ], 
             $messages = [

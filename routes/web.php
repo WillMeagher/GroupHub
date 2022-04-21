@@ -14,15 +14,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Auth::routes([
-    'login' => false,
-    'register' => false, // Registration Routes...
+    'login' => true, // set to false FOR JUST UMD LOGIN
+    'register' => true, // Registration Routes... set to false FOR JUST UMD LOGIN
     'reset' => false, // Password Reset Routes...
-    'verify' => false, // Email Verification Routes...
+    'verify' => true, // Email Verification Routes... set to false FOR JUST UMD LOGIN
   ]);
 
 Route::get('/cas/login', 'App\Http\Controllers\CasController@login');
-Route::get('/login', 'App\Http\Controllers\CasController@login');
-Route::get('/register', 'App\Http\Controllers\CasController@login');
+// REMOVE COMMENT FOR JUST UMD LOGIN Route::get('/login', 'App\Http\Controllers\CasController@login');
+// REMOVE COMMENT FOR JUST UMD LOGIN Route::get('/register', 'App\Http\Controllers\CasController@login');
 
 // these should remain above the resource to prevent issues with account names
 Route::get('/home', 'App\Http\Controllers\AccountsController@show');
